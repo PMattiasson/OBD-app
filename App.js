@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Provider as PaperProvider } from 'react-native-paper';
-import Cookies from './Components/Cookies';
+import OBD from './Components/OBD';
 
 export default function App() {
   return (
     <PaperProvider>
-      <Cookies/>
+      <OBD/>
     </PaperProvider>
   );
 }
