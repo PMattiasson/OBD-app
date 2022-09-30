@@ -26,11 +26,19 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "obd.per"
+      "package": "obd.per",
+      "permissions": [
+        "android.permission.BLUETOOTH",
+        "android.permission.BLUETOOTH_ADMIN",
+        "android.permission.BLUETOOTH_CONNECT"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
+    "plugins": [
+      "@config-plugins/react-native-ble-plx"
+    ],
     "extra": {
       "eas": {
         "projectId": "99a423d6-cc4a-4a56-8eae-33100da0563f"
