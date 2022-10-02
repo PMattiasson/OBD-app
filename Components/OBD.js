@@ -10,17 +10,18 @@ const OBD = () => {
     ]
 
     const [message, setMessage] = useState('04 41 0C B2 54 AA AA AA');
-    const [reply, setReply] = useState(convertPID(message)); 
+    const [reply, setReply] = useState(null); 
 
     return (
         <View style={styles.container}>
-            <TextInput
-                style={styles.heading}
-                mode='outlined'
-                label='OBD2 message'
-                value={message}
-                onChangeText={message => setMessage(message)}
-            />
+            <View style={styles.containerInner}>
+                <TextInput
+                    mode='outlined'
+                    label='OBD2 message'
+                    value={message}
+                    onChangeText={message => setMessage(message)}
+                />
+            </View>
 
             <Button 
                 style={styles.heading} 
@@ -29,7 +30,8 @@ const OBD = () => {
                 Press to test
             </Button>
             
-            <Text style={styles.heading} variant="titleMedium">{reply.description}: {reply.value} {reply.unit}</Text>
+            {reply && <Text style={styles.heading} variant="titleMedium">{reply.description}: {reply.value} {reply.unit}</Text>}
+
         </View>
     )
 
@@ -62,12 +64,15 @@ const OBD = () => {
         messageResponse.PID = hexBytes[2];
 
         // Assign A, B, C, D. Ugly solution below, plz fix
-        for (const [i, [key, value]] of Object.entries(Object.entries(messageResponse.data))) {
-            messageResponse.data[key] = hexBytes[Number(i)+3];
-        }
+        Object.keys(messageResponse.data).map((key, i)=>{
+            messageResponse.data[key] = hexBytes[i+3];
+        })
 
         // Find the corresponding response PID object
         let response = responsePIDs.find(obj => obj.PID === messageResponse.PID);
+        if (response == undefined) {
+            return null;
+        }
 
         // Get decimal value from message
         let hexValueString = Object.entries(messageResponse.data)
@@ -92,12 +97,16 @@ const styles = StyleSheet.create({
         marginBottom: 16
     },
     container: {
-      flex: 1,
-      backgroundColor: '#fff',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: 16
+        flex: 1,
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        padding: 16
     },
+    containerInner: {
+        height: 60,
+        marginBottom: 16
+    }
   });
 
   export default OBD;
