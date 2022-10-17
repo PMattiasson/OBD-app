@@ -5,7 +5,7 @@ import { TouchableOpacity, View } from 'react-native';
 import {LogBox, StyleSheet} from 'react-native';
 import base64 from 'react-native-base64';
 import {BleManager, Device} from 'react-native-ble-plx';
-import { Text, Button, TextInput } from 'react-native-paper';
+import { Text, Button, TextInput, Card, Avatar, TouchableRipple } from 'react-native-paper';
 import { Buffer } from 'buffer';
 
 LogBox.ignoreLogs(['new NativeEventEmitter']); // Ignore log notification by message
@@ -25,8 +25,10 @@ export default function Bluetooth() {
   const [connectedDevice, setConnectedDevice] = useState();
 
   const [message, setMessage] = useState();
-  const [request, setRequest] = useState('04410C');
+  const [request, setRequest] = useState('02010C');
   const [reply, setReply] = useState();
+  const [isloading, setLoading] = useState(false);
+  
 
   // Scans availbale BLT Devices and then call connectDevice
   async function scanDevices() {
@@ -44,6 +46,7 @@ export default function Bluetooth() {
     // stop scanning devices after 5 seconds
     setTimeout(() => {
       BLTManager.stopDeviceScan();
+      setLoading(false);
     }, 5000);
   }
 
@@ -107,6 +110,7 @@ export default function Bluetooth() {
         );
 
         console.log('Connection established');
+        setLoading(false);
       });
   }
 
@@ -184,22 +188,32 @@ export default function Bluetooth() {
   }
 
   return (
-    <View>
-      <View style={{paddingBottom: 200}}></View>
+    <View style={styles.container}>
 
       {/* Title */}
       <View style={styles.rowView}>
-        <Text style={styles.titleText}>OBD BLE Example</Text>
+        <Card.Title
+          style={styles.cardView}
+          title="On-Board Diagnostics"
+          subtitle="A BLE Example"
+          titleVariant='titleLarge'
+          titleStyle={styles.titleText}
+          subtitleStyle={styles.baseText}
+          left={(props) => <Avatar.Icon {...props} icon="engine" />}
+        />
       </View>
 
-      <View style={{paddingBottom: 20}}></View>
+      <View style={{paddingBottom: 50}}></View>
 
       {/* Connect Button */}
       <Button 
-        style={styles.rowView} 
+        style={styles.buttonView}
         mode="contained" 
+        icon={isloading ? "refresh" : isConnected ? "bluetooth-off" : "bluetooth"}
+        loading={isloading}
+        disabled={isloading}
         onPress={()=>{
-          isConnected ? disconnectDevice() : scanDevices();
+          isConnected ? disconnectDevice() : (scanDevices(), setLoading(true));
         }}
         >
         {isConnected ? "Disconnect" : "Connect"}
@@ -207,6 +221,7 @@ export default function Bluetooth() {
 
       <View style={{paddingBottom: 20}}></View>
 
+      {/* Test Input */}
       <View style={styles.containerInner}>
         <TextInput
             mode='flat'
@@ -216,9 +231,12 @@ export default function Bluetooth() {
         />
       </View>
 
+      {/* Request Button */}
       <Button 
-          style={styles.heading} 
+          style={styles.buttonView} 
           mode="outlined" 
+          disabled={!isConnected}
+          icon={"message-arrow-right"}
           onPress={()=>sendRequest(request)}>
           Send Request
       </Button>
@@ -226,15 +244,15 @@ export default function Bluetooth() {
       <View style={{paddingBottom: 20}}></View>
 
       {/* Monitored Value */}
-
       <View style={styles.rowView}>
         <Text style={styles.baseText}>Response: {message}</Text>
       </View>
 
       <View style={{paddingBottom: 20}}></View>
 
+      {/* Decoded Value */}
       <View style={styles.rowView}>
-        {reply && <Text style={styles.baseText}>{reply.description}: {reply.value} {reply.unit}</Text>}
+        {reply && <Text style={styles.titleText}>{reply.description}: {reply.value} {reply.unit}</Text>}
       </View>
 
     </View>
@@ -242,6 +260,13 @@ export default function Bluetooth() {
 }
 
  const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 16
+  },
   baseText: {
     fontSize: 15,
     fontFamily: 'Cochin',
@@ -261,5 +286,14 @@ export default function Bluetooth() {
     height: 60,
     width: '100%',
     marginBottom: 16
-}
+  },
+  buttonView: {
+    width: '50%',
+  },
+  cardView: {
+    borderWidth: 1,
+    borderRadius: 15,
+    borderColor: 'darkgray',
+  }
+
 });
