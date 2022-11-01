@@ -1,12 +1,10 @@
 // Example from https://github.com/palmmaximilian/ReactNativeArduinoBLE
 
 import React, {useState} from 'react';
-import { TouchableOpacity, View } from 'react-native';
-import {LogBox, StyleSheet} from 'react-native';
+import { View, StyleSheet, LogBox, PermissionsAndroid } from 'react-native';
 import base64 from 'react-native-base64';
 import {BleManager, Device} from 'react-native-ble-plx';
-import { Text, Button, TextInput, Card, Avatar, TouchableRipple } from 'react-native-paper';
-import { Buffer } from 'buffer';
+import { Text, Button, TextInput, Card, Avatar } from 'react-native-paper';
 
 LogBox.ignoreLogs(['new NativeEventEmitter']); // Ignore log notification by message
 LogBox.ignoreAllLogs(); //Ignore all log notifications
@@ -25,29 +23,42 @@ export default function Bluetooth() {
   const [connectedDevice, setConnectedDevice] = useState();
 
   const [message, setMessage] = useState();
-  const [request, setRequest] = useState('02010C');
+  const [request, setRequest] = useState('02 01 0C');
   const [reply, setReply] = useState();
   const [isloading, setLoading] = useState(false);
   
 
-  // Scans availbale BLT Devices and then call connectDevice
+  // Scans available BLT Devices and then call connectDevice
   async function scanDevices() {
-    BLTManager.startDeviceScan(null, null, (error, scannedDevice) => {
-      if (error) {
-        console.warn(error);
-      }
+    PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+      {
+        title: 'Permission Localisation Bluetooth',
+        message: 'Requirement for Bluetooth',
+        buttonNeutral: 'Later',
+        buttonNegative: 'Cancel',
+        buttonPositive: 'OK',
+      },
+    ).then(answere => {
+      console.log('Scanning for device');
 
-      if (scannedDevice && scannedDevice.name == 'OBD-BLE') {
+      BLTManager.startDeviceScan(null, null, (error, scannedDevice) => {
+        if (error) {
+          console.warn(error);
+        }
+
+        if (scannedDevice && scannedDevice.name == 'OBD-BLE') {
+          BLTManager.stopDeviceScan();
+          connectDevice(scannedDevice);
+        }
+      });
+
+      // stop scanning devices after 5 seconds
+      setTimeout(() => {
         BLTManager.stopDeviceScan();
-        connectDevice(scannedDevice);
-      }
+        setLoading(false);
+      }, 5000);
     });
-
-    // stop scanning devices after 5 seconds
-    setTimeout(() => {
-      BLTManager.stopDeviceScan();
-      setLoading(false);
-    }, 5000);
   }
 
   // handle the device disconnection (poorly)
@@ -71,7 +82,6 @@ export default function Bluetooth() {
       }
     }
   }
-
 
   //Connect the device and start monitoring characteristics
   async function connectDevice(device) {
@@ -216,7 +226,7 @@ export default function Bluetooth() {
           isConnected ? disconnectDevice() : (scanDevices(), setLoading(true));
         }}
         >
-        {isConnected ? "Disconnect" : "Connect"}
+        {isConnected ? "Disconnect" : isloading ? "Connecting": "Connect"}
       </Button>
 
       <View style={{paddingBottom: 20}}></View>
