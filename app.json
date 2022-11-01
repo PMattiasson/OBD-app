@@ -2,7 +2,7 @@
   "expo": {
     "name": "OBD",
     "slug": "OBD",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -19,14 +19,14 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "obd.per"
+      "bundleIdentifier": "com.per.obd"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/adaptive-icon-engine.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "obd.per",
+      "package": "com.per.obd",
       "permissions": [
         "android.permission.BLUETOOTH",
         "android.permission.BLUETOOTH_ADMIN",
