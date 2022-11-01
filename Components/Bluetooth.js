@@ -1,10 +1,13 @@
 // Example from https://github.com/palmmaximilian/ReactNativeArduinoBLE
 
 import React, {useState} from 'react';
-import { View, StyleSheet, LogBox, PermissionsAndroid } from 'react-native';
+import { View, StyleSheet, LogBox, PermissionsAndroid, Dimensions } from 'react-native';
 import base64 from 'react-native-base64';
 import {BleManager, Device} from 'react-native-ble-plx';
 import { Text, Button, TextInput, Card, Avatar } from 'react-native-paper';
+import { LineChart } from 'react-native-chart-kit';
+import DropDown from "react-native-paper-dropdown";
+import DropDownPicker from 'react-native-dropdown-picker';
 
 LogBox.ignoreLogs(['new NativeEventEmitter']); // Ignore log notification by message
 LogBox.ignoreAllLogs(); //Ignore all log notifications
@@ -23,9 +26,17 @@ export default function Bluetooth() {
   const [connectedDevice, setConnectedDevice] = useState();
 
   const [message, setMessage] = useState();
-  const [request, setRequest] = useState('02 01 0C');
+  const [request, setRequest] = useState();
   const [reply, setReply] = useState();
   const [isloading, setLoading] = useState(false);
+
+  const [data, setData] = useState([]);
+  const [showDropDown, setShowDropDown] = useState(false);
+
+  const [items, setItems] = useState([
+    {label: '0D : Vehicle speed', value: '02 01 0D'},
+    {label: '0C : Engine RPM', value: '02 01 0C'}
+  ]);
   
 
   // Scans available BLT Devices and then call connectDevice
@@ -56,6 +67,7 @@ export default function Bluetooth() {
       // stop scanning devices after 5 seconds
       setTimeout(() => {
         BLTManager.stopDeviceScan();
+        console.log('Scanning timed out');
         setLoading(false);
       }, 5000);
     });
@@ -110,10 +122,10 @@ export default function Bluetooth() {
             if (characteristic?.value != null) {
               setMessage(base64.decode(characteristic?.value));
               setReply(convertPID(base64.decode(characteristic?.value)));
-              console.log(
-                'Response received : ',
-                base64.decode(characteristic?.value),
-              );
+              // console.log(
+              //   'Response received : ',
+              //   base64.decode(characteristic?.value),
+              // );
             }
           },
           'messagetransaction',
@@ -189,6 +201,11 @@ export default function Bluetooth() {
 
     // Calculate message value from formula
     response.value = convertFormula(response, value);
+    let newData = data;
+    newData.push(response.value);
+    if (newData.length > 20)
+      newData.shift();
+    setData(newData);
     return response;
   }
 
@@ -231,25 +248,20 @@ export default function Bluetooth() {
 
       <View style={{paddingBottom: 20}}></View>
 
-      {/* Test Input */}
-      <View style={styles.containerInner}>
-        <TextInput
-            mode='flat'
-            label='OBD2 message'
-            value={request}
-            onChangeText={request => setRequest(request)}
+      {/* Request Input */}
+      <View style={styles.rowView}>
+        <DropDownPicker
+          open={showDropDown}
+          value={request}
+          items={items}
+          placeholder="Select OBD2 request message"
+          setOpen={setShowDropDown}
+          setValue={setRequest}
+          setItems={setItems}
+          onSelectItem={(item) => {isConnected && sendRequest(item.value)}}
         />
-      </View>
 
-      {/* Request Button */}
-      <Button 
-          style={styles.buttonView} 
-          mode="outlined" 
-          disabled={!isConnected}
-          icon={"message-arrow-right"}
-          onPress={()=>sendRequest(request)}>
-          Send Request
-      </Button>
+      </View>
 
       <View style={{paddingBottom: 20}}></View>
 
@@ -264,6 +276,45 @@ export default function Bluetooth() {
       <View style={styles.rowView}>
         {reply && <Text style={styles.titleText}>{reply.description}: {reply.value} {reply.unit}</Text>}
       </View>
+
+      <View style={{paddingBottom: 20}}></View>
+
+      {/* Data chart */}
+      {data.length === 0?
+        <View style={styles.rowView}>
+          <Text style={styles.baseText}>No chart data!</Text>
+        </View>
+        :
+        <LineChart
+          data={{
+            datasets: [
+              {
+                data: data
+              }
+            ]
+          }}
+          width={Dimensions.get("window").width}
+          height={220}
+          chartConfig={{
+            backgroundColor: '#3498db',
+            backgroundGradientFrom: "#3498db",
+            backgroundGradientTo: "#1788d4",
+            decimalPlaces: 0, // optional, defaults to 2dp
+            color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+            labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+            style: {
+              borderRadius: 16
+            },
+
+          }}
+          fromZero
+          withVerticalLines={false}
+          style={{
+            marginVertical: 8,
+            borderRadius: 16
+          }}
+          />
+        }
 
     </View>
   );
