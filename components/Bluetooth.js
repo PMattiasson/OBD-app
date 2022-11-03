@@ -1,12 +1,13 @@
 // Example from https://github.com/palmmaximilian/ReactNativeArduinoBLE
 
 import React, {useState} from 'react';
-import { View, StyleSheet, LogBox, PermissionsAndroid, Dimensions } from 'react-native';
+import { View, StyleSheet, LogBox, PermissionsAndroid } from 'react-native';
 import base64 from 'react-native-base64';
 import {BleManager, Device} from 'react-native-ble-plx';
-import { Text, Button, TextInput, Card, Avatar } from 'react-native-paper';
-import { LineChart } from 'react-native-chart-kit';
+import { Text, Button, Card, Avatar } from 'react-native-paper';
 import DropDownPicker from 'react-native-dropdown-picker';
+import { decodePID } from './Decoder';
+import DataChart from './DataChart';
 
 LogBox.ignoreLogs(['new NativeEventEmitter']); // Ignore log notification by message
 LogBox.ignoreAllLogs(); //Ignore all log notifications
@@ -120,7 +121,8 @@ export default function Bluetooth() {
           (error, characteristic) => {
             if (characteristic?.value != null) {
               setMessage(base64.decode(characteristic?.value));
-              convertPID(base64.decode(characteristic?.value));
+              let responseObj = decodePID(base64.decode(characteristic?.value));
+              handleResponse(responseObj);
               console.log(
                 'Response received : ',
                 base64.decode(characteristic?.value),
@@ -147,72 +149,45 @@ export default function Bluetooth() {
     });
   }
 
-  const modeCurrentData = '01';
-  const responsePIDs = [
-      { description: 'Engine RPM', PID: '0C', mode: modeCurrentData, bytes: 2, unit: 'rpm', scale: 0.25, offset: 0, min: 0, max: 16384, value: 0},
-      { description: 'Vehicle speed', PID: '0D', mode: modeCurrentData, bytes: 1, unit: 'km/h', scale: 1, offset: 0, min: 0, max: 255, value: 0},
-  ]
-
-  function convertPID(hexString) {
-    const messageResponse = {
-        bytes: 0,
-        mode: '01',
-        PID: '00',
-        data: {
-            A: '00',
-            B: '00',
-            C: '00',
-            D: '00',
-        },
-        undf: '00'
-    };
-    let hexBytes = [];
-
-    // Remove spaces from hexadecimal string
-    hexString = hexString.replace(/\s/g, '');
-
-    // Split the hexadecimal string into individual bytes
-    for (let i = 0; i < hexString.length; i += 2) {
-        hexBytes.push(hexString.substring(i, i+2));
-    }
-    // Assign the corresponding bytes
-    messageResponse.bytes = parseInt(hexBytes[0], 10);
-    messageResponse.mode = hexBytes[1];
-    messageResponse.PID = hexBytes[2];
-
-    // Assign A, B, C, D
-    Object.keys(messageResponse.data).map((key, i)=>{
-        messageResponse.data[key] = hexBytes[i+3];
-    })
-
-    // Find the corresponding response PID object
-    let response = responsePIDs.find(obj => obj.PID === messageResponse.PID);
-    if (response == undefined) {
-        setReply(null);
-        return;
-    }
-
-    // Get decimal value from message
-    let hexValueString = Object.entries(messageResponse.data)
-        .slice(0, response.bytes)
-        .map(entry => entry[1])
-        .join('');
-    let value = parseInt(hexValueString, 16);
-
-    // Calculate message value from formula
-    response.value = convertFormula(response, value);
+  function handleResponse(response) {
     let newData = data;
     newData.push(response.value);
     if (newData.length > 20)
       newData.shift();
     setData([...newData]);
     setReply(response);
-    // return response;
   }
 
-  function convertFormula(objResponse, decValue) {
-      let result = objResponse.offset + objResponse.scale * decValue;
-      return result;
+  function ConnectButton() {
+    return (
+      <Button 
+        style={styles.buttonView}
+        mode="contained" 
+        icon={isloading ? "refresh" : isConnected ? "bluetooth-off" : "bluetooth"}
+        loading={isloading}
+        disabled={isloading}
+        onPress={()=>{
+          isConnected ? disconnectDevice() : (scanDevices(), setLoading(true));
+        }}
+        >
+        {isConnected ? "Disconnect" : isloading ? "Connecting": "Connect"}
+      </Button>
+    );
+  }
+
+  function DropDownMenu() {
+    return (
+      <DropDownPicker
+        open={showDropDown}
+        value={request}
+        items={items}
+        placeholder="Select OBD2 request message"
+        setOpen={setShowDropDown}
+        setValue={setRequest}
+        setItems={setItems}
+        onSelectItem={(item) => {isConnected && sendRequest(item.value)}}
+      />
+    );
   }
 
   return (
@@ -234,34 +209,13 @@ export default function Bluetooth() {
       <View style={{paddingBottom: 50}}></View>
 
       {/* Connect Button */}
-      <Button 
-        style={styles.buttonView}
-        mode="contained" 
-        icon={isloading ? "refresh" : isConnected ? "bluetooth-off" : "bluetooth"}
-        loading={isloading}
-        disabled={isloading}
-        onPress={()=>{
-          isConnected ? disconnectDevice() : (scanDevices(), setLoading(true));
-        }}
-        >
-        {isConnected ? "Disconnect" : isloading ? "Connecting": "Connect"}
-      </Button>
+      <ConnectButton/>
 
       <View style={{paddingBottom: 20}}></View>
 
       {/* Request Input */}
       <View style={styles.rowView}>
-        <DropDownPicker
-          open={showDropDown}
-          value={request}
-          items={items}
-          placeholder="Select OBD2 request message"
-          setOpen={setShowDropDown}
-          setValue={setRequest}
-          setItems={setItems}
-          onSelectItem={(item) => {isConnected && sendRequest(item.value)}}
-        />
-
+        <DropDownMenu/>
       </View>
 
       <View style={{paddingBottom: 20}}></View>
@@ -281,41 +235,9 @@ export default function Bluetooth() {
       <View style={{paddingBottom: 20}}></View>
 
       {/* Data chart */}
-      {data.length === 0?
-        <View style={styles.rowView}>
-          <Text style={styles.baseText}>No chart data!</Text>
-        </View>
-        :
-        <LineChart
-          data={{
-            datasets: [
-              {
-                data: data
-              }
-            ]
-          }}
-          width={Dimensions.get("window").width}
-          height={220}
-          chartConfig={{
-            backgroundColor: '#3498db',
-            backgroundGradientFrom: "#3498db",
-            backgroundGradientTo: "#1788d4",
-            decimalPlaces: 0, // optional, defaults to 2dp
-            color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-            labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-            style: {
-              borderRadius: 16
-            },
-
-          }}
-          fromZero
-          withVerticalLines={false}
-          style={{
-            marginVertical: 8,
-            borderRadius: 16
-          }}
-          />
-        }
+      <DataChart
+        data={data}
+      />
 
     </View>
   );
