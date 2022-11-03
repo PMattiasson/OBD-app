@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { MD3LightTheme as DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
 // import OBD from './Components/OBD';
-import Bluetooth from './Components/Bluetooth';
+import Bluetooth from './components/Bluetooth';
 
 const theme = {
   ...DefaultTheme,
