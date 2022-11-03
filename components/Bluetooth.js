@@ -6,7 +6,6 @@ import base64 from 'react-native-base64';
 import {BleManager, Device} from 'react-native-ble-plx';
 import { Text, Button, TextInput, Card, Avatar } from 'react-native-paper';
 import { LineChart } from 'react-native-chart-kit';
-import DropDown from "react-native-paper-dropdown";
 import DropDownPicker from 'react-native-dropdown-picker';
 
 LogBox.ignoreLogs(['new NativeEventEmitter']); // Ignore log notification by message
@@ -121,11 +120,11 @@ export default function Bluetooth() {
           (error, characteristic) => {
             if (characteristic?.value != null) {
               setMessage(base64.decode(characteristic?.value));
-              setReply(convertPID(base64.decode(characteristic?.value)));
-              // console.log(
-              //   'Response received : ',
-              //   base64.decode(characteristic?.value),
-              // );
+              convertPID(base64.decode(characteristic?.value));
+              console.log(
+                'Response received : ',
+                base64.decode(characteristic?.value),
+              );
             }
           },
           'messagetransaction',
@@ -189,7 +188,8 @@ export default function Bluetooth() {
     // Find the corresponding response PID object
     let response = responsePIDs.find(obj => obj.PID === messageResponse.PID);
     if (response == undefined) {
-        return null;
+        setReply(null);
+        return;
     }
 
     // Get decimal value from message
@@ -205,8 +205,9 @@ export default function Bluetooth() {
     newData.push(response.value);
     if (newData.length > 20)
       newData.shift();
-    setData(newData);
-    return response;
+    setData([...newData]);
+    setReply(response);
+    // return response;
   }
 
   function convertFormula(objResponse, decValue) {
