@@ -62,5 +62,5 @@ function dataReducer(data, action) {
 }
 
 const initialData = {
-   description: 'Test', unit: 'm', value: 2, arr: [0, 1, 2]
+   description: '', unit: '', value: null, arr: []
 };
