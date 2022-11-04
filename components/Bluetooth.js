@@ -231,13 +231,13 @@ export default function Bluetooth() {
 
       {/* Decoded Value */}
       <View style={styles.rowView}>
-        <Text style={styles.titleText}>{data.description}: {data.value} {data.unit}</Text>
+        { data.value !== null && <Text style={styles.titleText}>{data.description}: {data.value} {data.unit}</Text> }
       </View>
 
       <View style={{paddingBottom: 20}}></View>
 
       {/* Data chart */}
-      <DataChart/>
+      {/* <DataChart/> */}
 
     </View>
   );

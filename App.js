@@ -3,6 +3,7 @@ import { MD3LightTheme as DefaultTheme, Provider as PaperProvider, BottomNavigat
 // import OBD from './Components/OBD';
 import Bluetooth from './components/Bluetooth';
 import { DataProvider } from './components/DataContext';
+import Chart from './screens/Charts';
 
 const theme = {
   ...DefaultTheme,
@@ -17,7 +18,7 @@ const theme = {
 };
 
 const ConnectRoute = () => <Bluetooth/>;
-const ChartRoute = () => <Text>Charts</Text>;
+const ChartRoute = () => <Chart/>;
 const TableRoute = () => <Text>Tables</Text>;
 
 export default function App() {
