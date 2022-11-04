@@ -2,21 +2,21 @@ import React from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
 import { Text } from 'react-native-paper';
 import { LineChart } from 'react-native-chart-kit';
-import { useData } from './DataContext';
 
-export default function DataChart() {
-    const data = useData();
-    if (data.arr.length > 0) {
+export default function DataChart(props) {
+  const chartData = props.data.arr;
+  const windowWidth = Dimensions.get("window").width;
+    if (chartData.length > 0) {
         return (
             <LineChart
             data={{
               datasets: [
                 {
-                  data: data.arr
+                  data: chartData
                 }
               ]
             }}
-            width={Dimensions.get("window").width}
+            width={windowWidth}
             height={220}
             chartConfig={{
               backgroundColor: '#3498db',
