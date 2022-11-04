@@ -20,7 +20,9 @@ const MESSAGE_UUID = '0000FFE1-0000-1000-8000-00805F9B34FB';
 
 export default function Bluetooth() {
   //Is a device connected?
-  const [isConnected, setIsConnected] = useState(false);
+  const [status, setStatus] = useState('waiting');
+  const isConnected = status === 'connected';
+  const isLoading = status === 'loading';
 
   //What device is connected?
   const [connectedDevice, setConnectedDevice] = useState();
@@ -28,7 +30,6 @@ export default function Bluetooth() {
   const [message, setMessage] = useState();
   const [request, setRequest] = useState();
   const [reply, setReply] = useState();
-  const [isloading, setLoading] = useState(false);
 
   const [data, setData] = useState([]);
   const [showDropDown, setShowDropDown] = useState(false);
@@ -67,8 +68,6 @@ export default function Bluetooth() {
       // stop scanning devices after 5 seconds
       setTimeout(() => {
         BLTManager.stopDeviceScan();
-        console.log('Scanning timed out');
-        setLoading(false);
       }, 5000);
     });
   }
@@ -90,7 +89,7 @@ export default function Bluetooth() {
 
       const connectionStatus = await connectedDevice.isConnected();
       if (!connectionStatus) {
-        setIsConnected(false);
+        setStatus('waiting');
       }
     }
   }
@@ -103,14 +102,14 @@ export default function Bluetooth() {
       .connect()
       .then(device => {
         setConnectedDevice(device);
-        setIsConnected(true);
+        setStatus('connected');
         return device.discoverAllServicesAndCharacteristics();
       })
       .then(device => {
         //  Set what to do when DC is detected
         BLTManager.onDeviceDisconnected(device.id, (error, device) => {
           console.log('Device DC');
-          setIsConnected(false);
+          setStatus('waiting');
         });
 
         //monitor values and tell what to do when receiving an update
@@ -133,7 +132,7 @@ export default function Bluetooth() {
         );
 
         console.log('Connection established');
-        setLoading(false);
+        setStatus('connected');
       });
   }
 
@@ -163,14 +162,14 @@ export default function Bluetooth() {
       <Button 
         style={styles.buttonView}
         mode="contained" 
-        icon={isloading ? "refresh" : isConnected ? "bluetooth-off" : "bluetooth"}
-        loading={isloading}
-        disabled={isloading}
+        icon={isLoading ? "refresh" : isConnected ? "bluetooth-off" : "bluetooth"}
+        loading={isLoading}
+        disabled={isLoading}
         onPress={()=>{
-          isConnected ? disconnectDevice() : (scanDevices(), setLoading(true));
+          isConnected ? disconnectDevice() : (scanDevices(), setStatus('loading'));
         }}
         >
-        {isConnected ? "Disconnect" : isloading ? "Connecting": "Connect"}
+        {isConnected ? "Disconnect" : isLoading ? "Connecting": "Connect"}
       </Button>
     );
   }
