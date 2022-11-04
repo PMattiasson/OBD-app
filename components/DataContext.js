@@ -44,10 +44,16 @@ function dataReducer(data, action) {
       return {
         ...data,
         value: action.value,
+        arr: [...data.arr, action.value]
+        // Add length limit
+      };
+    }
+    case 'changed': {
+      return {
+        ...data,
         description: action.description,
         unit: action.unit,
-        arr: [...data.arr, action.value]
-      };
+      }
     }
     case 'deleted': {
       return data.arr.filter((_, i) => i !== 0);

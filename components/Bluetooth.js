@@ -30,7 +30,6 @@ export default function Bluetooth() {
 
   const [message, setMessage] = useState();
   const [request, setRequest] = useState();
-  const [reply, setReply] = useState();
 
   const data = useData();
   const dispatch = useDataDispatch();
@@ -152,11 +151,16 @@ export default function Bluetooth() {
   }
 
   function handleResponse(response) {
+    if (response.description !== data.description) {
+      dispatch({
+        type: 'changed',
+        description: response.description,
+        unit: response.unit,
+      })
+    }
     dispatch({
       type: 'added',
       value: response.value,
-      description: response.description,
-      unit: response.unit
     })
   }
 
