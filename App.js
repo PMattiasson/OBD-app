@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { MD3LightTheme as DefaultTheme, Provider as PaperProvider, BottomNavigation, Text } from 'react-native-paper';
 // import OBD from './Components/OBD';
 import Bluetooth from './components/Bluetooth';
+import { DataProvider } from './components/DataContext';
 
 const theme = {
   ...DefaultTheme,
@@ -35,11 +36,13 @@ export default function App() {
 
   return (
     <PaperProvider theme={theme}>
-      <BottomNavigation
-        navigationState={{ index, routes }}
-        onIndexChange={setIndex}
-        renderScene={renderScene}
-      />
+      <DataProvider>
+        <BottomNavigation
+          navigationState={{ index, routes }}
+          onIndexChange={setIndex}
+          renderScene={renderScene}
+        />
+      </DataProvider>
     </PaperProvider>
   );
 }

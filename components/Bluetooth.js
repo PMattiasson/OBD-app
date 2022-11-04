@@ -8,6 +8,7 @@ import { Text, Button, Card, Avatar } from 'react-native-paper';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { decodePID } from './Decoder';
 import DataChart from './DataChart';
+import { useData, useDataDispatch } from './DataContext';
 
 LogBox.ignoreLogs(['new NativeEventEmitter']); // Ignore log notification by message
 LogBox.ignoreAllLogs(); //Ignore all log notifications
@@ -31,7 +32,9 @@ export default function Bluetooth() {
   const [request, setRequest] = useState();
   const [reply, setReply] = useState();
 
-  const [data, setData] = useState([]);
+  const data = useData();
+  const dispatch = useDataDispatch();
+
   const [showDropDown, setShowDropDown] = useState(false);
 
   const [items, setItems] = useState([
@@ -149,12 +152,12 @@ export default function Bluetooth() {
   }
 
   function handleResponse(response) {
-    let newData = data;
-    newData.push(response.value);
-    if (newData.length > 20)
-      newData.shift();
-    setData([...newData]);
-    setReply(response);
+    dispatch({
+      type: 'added',
+      value: response.value,
+      description: response.description,
+      unit: response.unit
+    })
   }
 
   function ConnectButton() {
@@ -228,15 +231,13 @@ export default function Bluetooth() {
 
       {/* Decoded Value */}
       <View style={styles.rowView}>
-        {reply && <Text style={styles.titleText}>{reply.description}: {reply.value} {reply.unit}</Text>}
+        <Text style={styles.titleText}>{data.description}: {data.value} {data.unit}</Text>
       </View>
 
       <View style={{paddingBottom: 20}}></View>
 
       {/* Data chart */}
-      <DataChart
-        data={data}
-      />
+      <DataChart/>
 
     </View>
   );

@@ -2,15 +2,17 @@ import React from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
 import { Text } from 'react-native-paper';
 import { LineChart } from 'react-native-chart-kit';
+import { useData } from './DataContext';
 
-export default function DataChart({ data }) {
-    if (data.length > 0) {
+export default function DataChart() {
+    const data = useData();
+    if (data.arr.length > 0) {
         return (
             <LineChart
             data={{
               datasets: [
                 {
-                  data: data
+                  data: data.arr
                 }
               ]
             }}
