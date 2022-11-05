@@ -5,9 +5,8 @@ import { LineChart } from 'react-native-chart-kit';
 
 export default function DataChart(props) {
   const data = props.data.arr;
-  if (data.length > 20) {
-    chartData = data.slice(-20);
-  }
+  const chartData = data.slice(-20);
+
   const windowWidth = Dimensions.get("window").width;
     if (chartData.length > 0) {
         return (
