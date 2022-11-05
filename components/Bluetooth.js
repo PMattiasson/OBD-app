@@ -7,8 +7,8 @@ import {BleManager, Device} from 'react-native-ble-plx';
 import { Text, Button, Card, Avatar } from 'react-native-paper';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { decodePID } from './Decoder';
-import DataChart from './DataChart';
 import { useData, useDataDispatch } from './DataContext';
+import Speedometer from './Speedometer';
 
 LogBox.ignoreLogs(['new NativeEventEmitter']); // Ignore log notification by message
 LogBox.ignoreAllLogs(); //Ignore all log notifications
@@ -240,8 +240,7 @@ export default function Bluetooth() {
 
       <View style={{paddingBottom: 20}}></View>
 
-      {/* Data chart */}
-      {/* <DataChart/> */}
+      { data.description === 'Vehicle speed' && <Speedometer speed={data.value}/> }
 
     </View>
   );
