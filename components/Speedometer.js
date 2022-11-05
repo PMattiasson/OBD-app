@@ -5,11 +5,13 @@ import { Svg, G, Line, Text, Polygon } from "react-native-svg";
 // import Animated, { useSharedValue, useAnimatedProps } from 'react-native-reanimated';
 
 export default function Speedometer({ speed }) {
+    // General component variables
     const width = Dimensions.get("window").width;
     const height = width / 2 + width * Math.sin(10 * Math.PI / 180);
     const radius = width * 0.9 / 2;
     const center = width / 2;
 
+    // Tick variables
     const maxSpeed = 260;
     const ticksMajor = 14;
     const ticksMinor = 10 * (ticksMajor - 1);
@@ -31,19 +33,18 @@ export default function Speedometer({ speed }) {
         return result;
     }
 
-    function valueToAngle(value) {
-        const angle = angleOffset + value * angleRange / maxSpeed;
-        return angle;
-    }
+    const speedInDegrees = speed * angleRange / maxSpeed;
 
-    function Needle({angle}) {
-        const {x, y} = fromPolar(center, center, radius, angle);
+    function Needle({rotation=0}) {
+        const {x, y} = fromPolar(center, center, radius, angleOffset);
         return (
             <Line
                 x1={center}
                 y1={center}
                 x2={x}
                 y2={y}
+                origin={[center, center]}
+                rotation={rotation}
                 strokeWidth={10}
                 strokeLinecap='round'
                 stroke={'red'}
@@ -133,7 +134,7 @@ export default function Speedometer({ speed }) {
     return (
         <Svg height={height} width={width}>
             <Ticks/>
-            <Needle angle={valueToAngle(speed)}/>
+            <Needle rotation={speedInDegrees}/>
         </Svg>
     );
 }
