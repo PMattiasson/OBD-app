@@ -1,16 +1,12 @@
 import { useEffect } from "react";
-import { Dimensions, LogBox, View } from "react-native";
+import { View } from "react-native";
 import { Svg, G, Line, Polygon } from "react-native-svg";
-import Animated, { useSharedValue, useAnimatedStyle, withSpring, interpolate } from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, interpolate, withSpring, withTiming } from 'react-native-reanimated';
+import polarToCartesian from "../utils/polarToCartesian";
 
 const AnimatedView = Animated.createAnimatedComponent(View);
 
-export default function SpeedIndicator({angle}) {
-    
-    const width = Dimensions.get("window").width;
-    const radius = width * 0.9 / 2;
-    const center = width / 2;
-    const angleOffset = -10;
+export default function SpeedIndicator({angle, width, radius, center, angleOffset}) {
 
     const animationRotation = useSharedValue(0);
 
@@ -22,18 +18,13 @@ export default function SpeedIndicator({angle}) {
         };
     })
 
+    // animationConfig = {};
+
     useEffect(() => {
-        animationRotation.value = withSpring(angle);
+        animationRotation.value = withTiming(angle, { duration: 900 });
     });
 
-    function fromPolar(xOrigin, yOrigin, radius, angleInDegrees) {
-        const angleInRadians = (angleInDegrees - 180) * Math.PI / 180;
-        const x = xOrigin + radius * Math.cos(angleInRadians)
-        const y = yOrigin + radius * Math.sin(angleInRadians)
-        return {x, y};
-    }
-
-    const {x, y} = fromPolar(center, center, radius, angleOffset);
+    const {x, y} = polarToCartesian(radius, angleOffset, center, center, -180);
 
     return (
         <AnimatedView
