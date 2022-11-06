@@ -1,8 +1,8 @@
 // Inspired by https://www.lahteenlahti.com/creating-a-clock-face-in-react-native-with-svg/
 
-import { Dimensions } from "react-native";
+import { View, Dimensions } from "react-native";
 import { Svg, G, Line, Text, Polygon } from "react-native-svg";
-// import Animated, { useSharedValue, useAnimatedProps } from 'react-native-reanimated';
+import SpeedIndicator from "./SpeedIndicator";
 
 export default function Speedometer({ speed }) {
     // General component variables
@@ -34,23 +34,6 @@ export default function Speedometer({ speed }) {
     }
 
     const speedInDegrees = speed * angleRange / maxSpeed;
-
-    function Needle({rotation=0}) {
-        const {x, y} = fromPolar(center, center, radius, angleOffset);
-        return (
-            <Line
-                x1={center}
-                y1={center}
-                x2={x}
-                y2={y}
-                origin={[center, center]}
-                rotation={rotation}
-                strokeWidth={10}
-                strokeLinecap='round'
-                stroke={'red'}
-            />
-        );
-    }
 
     function Ticks() {
         function MajorTicks() {
@@ -111,30 +94,38 @@ export default function Speedometer({ speed }) {
 
         const stepSemiMinorTick = angleRange / ticksMinor;
         return (
-            <G>
-                <MinorTicks 
-                    startAngle={angleOffset}
-                    stopAngle={angleRange + angleOffset}
-                    stepAngle={angleRange / ticksMinor}
-                    strokeWidth={1}
-                    strokeLength={10}
-                />
-                <MinorTicks 
-                    startAngle={angleOffset + 5 * stepSemiMinorTick}
-                    stopAngle={angleRange + angleOffset - 5 * stepSemiMinorTick}
-                    stepAngle={angleRange / (ticksMajor-1)}
-                    strokeWidth={4}
-                    strokeLength={12}
-                />
-                <MajorTicks/>
-            </G>
+            <View
+                style={{position: 'absolute'}}
+            >
+                <Svg 
+                    height={height} 
+                    width={width}>
+                    <G>
+                        <MinorTicks 
+                            startAngle={angleOffset}
+                            stopAngle={angleRange + angleOffset}
+                            stepAngle={angleRange / ticksMinor}
+                            strokeWidth={1}
+                            strokeLength={10}
+                        />
+                        <MinorTicks 
+                            startAngle={angleOffset + 5 * stepSemiMinorTick}
+                            stopAngle={angleRange + angleOffset - 5 * stepSemiMinorTick}
+                            stepAngle={angleRange / (ticksMajor-1)}
+                            strokeWidth={4}
+                            strokeLength={12}
+                        />
+                        <MajorTicks/>
+                    </G>
+                </Svg>
+            </View>
         );
     }
 
     return (
-        <Svg height={height} width={width}>
+        <View style={{width: width, height: height}}>
             <Ticks/>
-            <Needle rotation={speedInDegrees}/>
-        </Svg>
+            <SpeedIndicator angle={speedInDegrees}/>
+        </View>
     );
 }
