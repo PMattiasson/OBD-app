@@ -30,7 +30,7 @@ export function decodePID(hexString) {
     // Assign A, B, C, D
     Object.keys(messageResponse.data).map((key, i)=>{
         messageResponse.data[key] = hexBytes[i+3];
-    })
+    });
 
     // Find the corresponding response PID object
     let response = responsePIDs.find(obj => obj.PID === messageResponse.PID);
@@ -48,10 +48,10 @@ export function decodePID(hexString) {
     // Calculate message value from formula
     response.value = convertFormula(response, value);
     return response;
-  }
+}
 
-  function convertFormula(objResponse, decValue) {
-      let result = objResponse.offset + objResponse.scale * decValue;
-      return result;
-  }
+function convertFormula(objResponse, decValue) {
+    let result = objResponse.offset + objResponse.scale * decValue;
+    return result;
+}
 

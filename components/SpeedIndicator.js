@@ -1,8 +1,8 @@
-import { useEffect } from "react";
-import { View } from "react-native";
-import { Svg, G, Line, Polygon } from "react-native-svg";
+import { useEffect } from 'react';
+import { View } from 'react-native';
+import { Svg, G, Line, Polygon } from 'react-native-svg';
 import Animated, { useSharedValue, useAnimatedStyle, interpolate, withSpring, withTiming } from 'react-native-reanimated';
-import polarToCartesian from "../utils/polarToCartesian";
+import polarToCartesian from '../utils/polarToCartesian';
 
 const AnimatedView = Animated.createAnimatedComponent(View);
 
@@ -16,13 +16,13 @@ export default function SpeedIndicator({angle, width, radius, center, angleOffse
             { rotate: `${rotation}deg`},
         ],
         };
-    })
+    });
 
     // animationConfig = {};
 
     useEffect(() => {
         animationRotation.value = withTiming(angle, { duration: 900 });
-    });
+    },[animationRotation.value, angle]);
 
     const {x, y} = polarToCartesian(radius, angleOffset, center, center, -180);
 
@@ -34,7 +34,7 @@ export default function SpeedIndicator({angle, width, radius, center, angleOffse
             <Svg 
                 height={width} 
                 width={width}
-                >
+            >
                 <Line
                     x1={center}
                     y1={center}

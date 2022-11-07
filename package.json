@@ -6,7 +6,9 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "dev": "APP_VARIANT=development expo start --dev-client --tunnel"
+    "dev": "APP_VARIANT=development expo start --dev-client --tunnel",
+    "lint": "eslint .",
+    "format": "prettier --check ./components"
   },
   "dependencies": {
     "@config-plugins/react-native-ble-plx": "^3.0.0",
@@ -25,13 +27,18 @@
     "react-native-chart-kit": "^6.12.0",
     "react-native-dropdown-picker": "^5.4.2",
     "react-native-paper": "^5.0.0-rc.6",
+    "react-native-reanimated": "~2.9.1",
     "react-native-svg": "^13.4.0",
     "react-native-web": "~0.18.7",
-    "rn-range-slider": "^2.2.2",
-    "react-native-reanimated": "~2.9.1"
+    "rn-range-slider": "^2.2.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.9"
+    "@babel/core": "^7.12.9",
+    "eslint": "^8.27.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-react": "^7.31.10",
+    "eslint-plugin-react-native": "^4.0.0",
+    "prettier": "^2.7.1"
   },
   "private": true
 }

@@ -19,54 +19,54 @@ export const DataContext = createContext(null);
 export const DataDispatchContext = createContext(null);
 
 export function DataProvider({ children }) {
-  const [data, dispatch] = useReducer(dataReducer, initialData);
+    const [data, dispatch] = useReducer(dataReducer, initialData);
 
-  return (
-    <DataContext.Provider value={data}>
-      <DataDispatchContext.Provider value={dispatch}>
-        {children}
-      </DataDispatchContext.Provider>
-    </DataContext.Provider>
-  );
+    return (
+        <DataContext.Provider value={data}>
+            <DataDispatchContext.Provider value={dispatch}>
+                {children}
+            </DataDispatchContext.Provider>
+        </DataContext.Provider>
+    );
 }
 
 export function useData() {
-  return useContext(DataContext);
+    return useContext(DataContext);
 }
 
 export function useDataDispatch() {
-  return useContext(DataDispatchContext);
+    return useContext(DataDispatchContext);
 }
 
 function dataReducer(data, action) {
-  switch (action.type) {
+    switch (action.type) {
     case 'added': {
-      return {
-        ...data,
-        value: action.value,
-        arr: [...data.arr, action.value]
+        return {
+            ...data,
+            value: action.value,
+            arr: [...data.arr, action.value]
         // Add length limit
-      };
+        };
     }
     case 'changed': {
-      return {
-        ...data,
-        description: action.description,
-        unit: action.unit,
-      }
+        return {
+            ...data,
+            description: action.description,
+            unit: action.unit,
+        };
     }
     case 'deleted': {
-      return data.arr.filter((_, i) => i !== 0);
+        return data.arr.filter((_, i) => i !== 0);
     }
     case 'reset': {
-      return { ...initialData };
+        return { ...initialData };
     }
     default: {
-      throw Error('Unknown action: ' + action.type);
+        throw Error('Unknown action: ' + action.type);
     }
-  }
+    }
 }
 
 const initialData = {
-   description: '', unit: '', value: null, arr: []
+    description: 'Vehicle speed', unit: 'km/h', value: 100, arr: [100]
 };

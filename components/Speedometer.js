@@ -1,14 +1,14 @@
 // Inspired by https://www.lahteenlahti.com/creating-a-clock-face-in-react-native-with-svg/
 
-import { View, Dimensions } from "react-native";
-import { Svg, G, Line, Text, Polygon } from "react-native-svg";
-import SpeedIndicator from "./SpeedIndicator";
-import polarToCartesian from "../utils/polarToCartesian";
-import range from "../utils/range";
+import { View, Dimensions } from 'react-native';
+import { Svg, G, Line, Text, Polygon } from 'react-native-svg';
+import SpeedIndicator from './SpeedIndicator';
+import polarToCartesian from '../utils/polarToCartesian';
+import range from '../utils/range';
 
 export default function Speedometer({ speed }) {
     // General component variables
-    const width = Dimensions.get("window").width;
+    const width = Dimensions.get('window').width;
     const height = width / 2 + width * Math.sin(6 * Math.PI / 180);
     const radius = width * 0.9 / 2;
     const center = width / 2;
@@ -50,7 +50,7 @@ export default function Speedometer({ speed }) {
                             alignmentBaseline="central"
                             x={posDigit.x}
                             y={posDigit.y}
-                            >
+                        >
                             {speedArray[index]}
                         </Text>
                     </G>
