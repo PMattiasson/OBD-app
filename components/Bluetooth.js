@@ -240,7 +240,9 @@ export default function Bluetooth() {
 
       <View style={{paddingBottom: 20}}></View>
 
-      { data.description === 'Vehicle speed' && <Speedometer speed={data.value}/> }
+      <View style={styles.containerBottom}>
+        { data.description === 'Vehicle speed' && <Speedometer speed={data.value}/> }
+      </View>
 
     </View>
   );
@@ -252,7 +254,12 @@ export default function Bluetooth() {
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 16
+    paddingHorizontal: 16,
+    paddingTop: 16
+  },
+  containerBottom: {
+    flex: 1,
+    justifyContent: 'flex-end',
   },
   baseText: {
     fontSize: 15,
