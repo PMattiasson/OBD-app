@@ -65,6 +65,7 @@ export default function Bluetooth() {
             // stop scanning devices after 5 seconds
             setTimeout(() => {
                 BLTManager.stopDeviceScan();
+                setStatus(isConnected ? 'connected' : 'waiting');
             }, 5000);
         });
     }
