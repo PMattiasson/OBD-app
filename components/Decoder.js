@@ -11,7 +11,7 @@ export function decodePID(hexString) {
             C: '00',
             D: '00',
         },
-        undf: '00'
+        undf: '00',
     };
     let hexBytes = [];
 
@@ -20,7 +20,7 @@ export function decodePID(hexString) {
 
     // Split the hexadecimal string into individual bytes
     for (let i = 0; i < hexString.length; i += 2) {
-        hexBytes.push(hexString.substring(i, i+2));
+        hexBytes.push(hexString.substring(i, i + 2));
     }
     // Assign the corresponding bytes
     messageResponse.bytes = parseInt(hexBytes[0], 10);
@@ -28,12 +28,12 @@ export function decodePID(hexString) {
     messageResponse.PID = hexBytes[2];
 
     // Assign A, B, C, D
-    Object.keys(messageResponse.data).map((key, i)=>{
-        messageResponse.data[key] = hexBytes[i+3];
+    Object.keys(messageResponse.data).map((key, i) => {
+        messageResponse.data[key] = hexBytes[i + 3];
     });
 
     // Find the corresponding response PID object
-    let response = responsePIDs.find(obj => obj.PID === messageResponse.PID);
+    let response = responsePIDs.find((obj) => obj.PID === messageResponse.PID);
     if (response == undefined) {
         return null;
     }
@@ -41,7 +41,7 @@ export function decodePID(hexString) {
     // Get decimal value from message
     let hexValueString = Object.entries(messageResponse.data)
         .slice(0, response.bytes)
-        .map(entry => entry[1])
+        .map((entry) => entry[1])
         .join('');
     let value = parseInt(hexValueString, 16);
 
@@ -54,4 +54,3 @@ function convertFormula(objResponse, decValue) {
     let result = objResponse.offset + objResponse.scale * decValue;
     return result;
 }
-

@@ -1,9 +1,9 @@
 // Example from https://github.com/palmmaximilian/ReactNativeArduinoBLE
 
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, LogBox, PermissionsAndroid } from 'react-native';
 import base64 from 'react-native-base64';
-import {BleManager, Device} from 'react-native-ble-plx';
+import { BleManager, Device } from 'react-native-ble-plx';
 import { Text, Button, Card, Avatar } from 'react-native-paper';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { decodePID } from './Decoder';
@@ -17,7 +17,6 @@ const BLTManager = new BleManager();
 
 const SERVICE_UUID = '0000FFE0-0000-1000-8000-00805F9B34FB';
 const MESSAGE_UUID = '0000FFE1-0000-1000-8000-00805F9B34FB';
-
 
 export default function Bluetooth() {
     //Is a device connected?
@@ -37,23 +36,19 @@ export default function Bluetooth() {
     const [showDropDown, setShowDropDown] = useState(false);
 
     const [items, setItems] = useState([
-        {label: '0D : Vehicle speed', value: '02 01 0D'},
-        {label: '0C : Engine RPM', value: '02 01 0C'}
+        { label: '0D : Vehicle speed', value: '02 01 0D' },
+        { label: '0C : Engine RPM', value: '02 01 0C' },
     ]);
-  
 
     // Scans available BLT Devices and then call connectDevice
     async function scanDevices() {
-        PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-            {
-                title: 'Permission Localisation Bluetooth',
-                message: 'Requirement for Bluetooth',
-                buttonNeutral: 'Later',
-                buttonNegative: 'Cancel',
-                buttonPositive: 'OK',
-            },
-        ).then(answere => {
+        PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION, {
+            title: 'Permission Localisation Bluetooth',
+            message: 'Requirement for Bluetooth',
+            buttonNeutral: 'Later',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+        }).then((answere) => {
             console.log('Scanning for device');
 
             BLTManager.startDeviceScan(null, null, (error, scannedDevice) => {
@@ -102,12 +97,12 @@ export default function Bluetooth() {
 
         device
             .connect()
-            .then(device => {
+            .then((device) => {
                 setConnectedDevice(device);
                 setStatus('connected');
                 return device.discoverAllServicesAndCharacteristics();
             })
-            .then(device => {
+            .then((device) => {
                 //  Set what to do when DC is detected
                 BLTManager.onDeviceDisconnected(device.id, (error, device) => {
                     console.log('Device DC');
@@ -143,9 +138,9 @@ export default function Bluetooth() {
             connectedDevice?.id,
             SERVICE_UUID,
             MESSAGE_UUID,
-            base64.encode(msg+'\n'),
+            base64.encode(msg + '\n'),
             //Buffer.from(msg).toString('base64'),
-        ).then(characteristic => {
+        ).then((characteristic) => {
             console.log('Request sent :', base64.decode(characteristic.value));
         });
     }
@@ -166,17 +161,17 @@ export default function Bluetooth() {
 
     function ConnectButton() {
         return (
-            <Button 
+            <Button
                 style={styles.buttonView}
-                mode="contained" 
+                mode="contained"
                 icon={isLoading ? 'refresh' : isConnected ? 'bluetooth-off' : 'bluetooth'}
                 loading={isLoading}
                 disabled={isLoading}
-                onPress={()=>{
+                onPress={() => {
                     isConnected ? disconnectDevice() : (scanDevices(), setStatus('loading'));
                 }}
             >
-                {isConnected ? 'Disconnect' : isLoading ? 'Connecting': 'Connect'}
+                {isConnected ? 'Disconnect' : isLoading ? 'Connecting' : 'Connect'}
             </Button>
         );
     }
@@ -191,59 +186,63 @@ export default function Bluetooth() {
                 setOpen={setShowDropDown}
                 setValue={setRequest}
                 setItems={setItems}
-                onSelectItem={(item) => {isConnected && sendRequest(item.value);}}
+                onSelectItem={(item) => {
+                    isConnected && sendRequest(item.value);
+                }}
             />
         );
     }
 
     return (
         <View style={styles.container}>
-
             {/* Title */}
             <View style={styles.rowView}>
                 <Card.Title
                     style={styles.cardView}
                     title="On-Board Diagnostics"
                     subtitle="A BLE Example"
-                    titleVariant='titleLarge'
+                    titleVariant="titleLarge"
                     titleStyle={styles.titleText}
                     subtitleStyle={styles.baseText}
                     left={(props) => <Avatar.Icon {...props} icon="engine" />}
                 />
             </View>
 
-            <View style={{paddingBottom: 50}}></View>
+            <View style={{ paddingBottom: 50 }}></View>
 
             {/* Connect Button */}
-            <ConnectButton/>
+            <ConnectButton />
 
-            <View style={{paddingBottom: 20}}></View>
+            <View style={{ paddingBottom: 20 }}></View>
 
             {/* Request Input */}
             <View style={styles.rowView}>
-                <DropDownMenu/>
+                <DropDownMenu />
             </View>
 
-            <View style={{paddingBottom: 20}}></View>
+            <View style={{ paddingBottom: 20 }}></View>
 
             {/* Monitored Value */}
             <View style={styles.rowView}>
                 <Text style={styles.baseText}>Response: {message}</Text>
             </View>
 
-            <View style={{paddingBottom: 20}}></View>
+            <View style={{ paddingBottom: 20 }}></View>
 
             {/* Decoded Value */}
             <View style={styles.rowView}>
-                { data.value !== null && <Text style={styles.titleText}>{data.description}: {data.value} {data.unit}</Text> }
+                {data.value !== null && (
+                    <Text style={styles.titleText}>
+                        {data.description}: {data.value} {data.unit}
+                    </Text>
+                )}
             </View>
 
-            <View style={{paddingBottom: 20}}></View>
+            <View style={{ paddingBottom: 20 }}></View>
 
             <View style={styles.containerBottom}>
-                { data.description === 'Vehicle speed' && <Speedometer speed={data.value}/> }
+                {data.description === 'Vehicle speed' && <Speedometer speed={data.value} />}
             </View>
-
         </View>
     );
 }
@@ -255,7 +254,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         paddingHorizontal: 16,
-        paddingTop: 16
+        paddingTop: 16,
     },
     containerBottom: {
         flex: 1,
@@ -264,12 +263,12 @@ const styles = StyleSheet.create({
     baseText: {
         fontSize: 15,
         fontFamily: 'Cochin',
-        color: 'black'
+        color: 'black',
     },
     titleText: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: 'black'
+        color: 'black',
     },
     rowView: {
         justifyContent: 'space-around',
@@ -279,7 +278,7 @@ const styles = StyleSheet.create({
     containerInner: {
         height: 60,
         width: '100%',
-        marginBottom: 16
+        marginBottom: 16,
     },
     buttonView: {
         width: '50%',
@@ -288,6 +287,5 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 15,
         borderColor: 'darkgray',
-    }
-
+    },
 });

@@ -23,9 +23,7 @@ export function DataProvider({ children }) {
 
     return (
         <DataContext.Provider value={data}>
-            <DataDispatchContext.Provider value={dispatch}>
-                {children}
-            </DataDispatchContext.Provider>
+            <DataDispatchContext.Provider value={dispatch}>{children}</DataDispatchContext.Provider>
         </DataContext.Provider>
     );
 }
@@ -44,8 +42,8 @@ function dataReducer(data, action) {
         return {
             ...data,
             value: action.value,
-            arr: [...data.arr, action.value]
-        // Add length limit
+            arr: [...data.arr, action.value],
+            // Add length limit
         };
     }
     case 'changed': {
@@ -68,5 +66,8 @@ function dataReducer(data, action) {
 }
 
 const initialData = {
-    description: 'Vehicle speed', unit: 'km/h', value: 100, arr: [100]
+    description: 'Vehicle speed',
+    unit: 'km/h',
+    value: 100,
+    arr: [100],
 };
