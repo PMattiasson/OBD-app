@@ -7,7 +7,7 @@ import Animated, {
     interpolate,
     withTiming,
 } from 'react-native-reanimated';
-import polarToCartesian from '../utils/polarToCartesian';
+import polarToCartesian from '../../utils/polarToCartesian';
 
 const AnimatedView = Animated.createAnimatedComponent(View);
 
@@ -23,7 +23,7 @@ export default function SpeedIndicator({ angle, width, radius, center, angleOffs
 
     useEffect(() => {
         animationRotation.value = withTiming(angle, { duration: 900 });
-    }, [animationRotation.value, angle]);
+    }, [angle]);
 
     const { x, y } = polarToCartesian(radius, angleOffset, center, center, -180);
 
