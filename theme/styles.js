@@ -28,6 +28,14 @@ export const containerStyles = StyleSheet.create({
         height: '100%',
         alignItems: 'center',
         justifyContent: 'center',
+        padding: 10,
+    },
+    spaceBetween: {
+        flex: 1,
+        width: '100%',
+        height: '100%',
+        alignItems: 'center',
+        justifyContent: 'space-between',
     },
     bottom: {
         flex: 1,
@@ -35,20 +43,37 @@ export const containerStyles = StyleSheet.create({
     },
 });
 
+export const itemStyles = StyleSheet.create({
+    row: {
+        justifyContent: 'space-around',
+        alignItems: 'flex-start',
+        flexDirection: 'row',
+    },
+});
+
 export const textStyles = StyleSheet.create({
     base: {
         fontSize: 15,
-        fontFamily: 'Cochin',
         color: 'black',
+        margin: 10,
     },
-    heading: {
+    title: {
         fontSize: 20,
         fontWeight: 'bold',
         color: 'black',
     },
 });
 
+export const buttonStyles = StyleSheet.create({
+    primary: {
+        width: '50%',
+        margin: 20,
+    },
+});
+
 export const styles = {
     container: { ...containerStyles },
+    item: { ...itemStyles },
     text: { ...textStyles },
+    button: { ...buttonStyles },
 };
