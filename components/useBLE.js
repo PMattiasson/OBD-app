@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { PermissionsAndroid, Platform } from 'react-native';
 import base64 from 'react-native-base64';
 import { BleManager } from 'react-native-ble-plx';
@@ -20,6 +20,7 @@ export default function useBLE() {
 
     const [adapterState, setAdapterState] = useState();
     const [subscriptions, setSubscriptions] = useState([]);
+    const connectionSubscription = useRef();
 
     async function requestPermissions() {
         const apiLevel = Platform.Version;
@@ -79,6 +80,7 @@ export default function useBLE() {
             setConnectedDevice(deviceConnection);
             setStatus('connected');
             await deviceConnection.discoverAllServicesAndCharacteristics();
+            connectionSubscription.current = deviceConnection.onDisconnected(handleOnDisconnect);
             monitorCharacteristic(deviceConnection);
         } catch (err) {
             console.log('Failed to connect', err);
@@ -88,17 +90,26 @@ export default function useBLE() {
     async function disconnectFromDevice() {
         if (connectedDevice) {
             const isDeviceConnected = await connectedDevice.isConnected();
+            connectionSubscription.current?.remove();
+            connectionSubscription.current = null;
             if (isDeviceConnected) {
                 await connectedDevice.cancelConnection();
-                setConnectedDevice(null);
                 setStatus('waiting');
                 console.log('Disconnected from device');
             } else {
                 console.log('Disconnect failed: No device connected');
+                setStatus('waiting');
             }
         } else {
             console.log('Disconnect failed: Device is undefined');
         }
+    }
+
+    function handleOnDisconnect() {
+        console.log('Disconnected: Connection lost!');
+        connectionSubscription.current?.remove();
+        connectionSubscription.current = null;
+        setStatus('waiting');
     }
 
     async function monitorCharacteristic(device) {
@@ -139,15 +150,15 @@ export default function useBLE() {
         }
     }
 
-    // Adapter state
+    // Bluetooth adapter state
     useEffect(() => {
         const subscription = BLEManager.onStateChange((state) => {
             setAdapterState(state);
-            setSubscriptions((prevState) => [prevState, subscription]);
+            setSubscriptions((prevState) => [...prevState, subscription]);
         }, true);
         return () => {
             subscriptions.map((_subscription) => {
-                _subscription.remove();
+                _subscription?.remove();
                 return true;
             });
             setSubscriptions([]);
