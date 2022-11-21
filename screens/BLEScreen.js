@@ -22,8 +22,10 @@ export default function BLEScreen() {
     // Dropdown menu
     const [showDropDown, setShowDropDown] = useState(false);
     const [items, setItems] = useState([
-        { label: '0D - Vehicle speed', value: '02 01 0D' },
-        { label: '0C - Engine speed', value: '02 01 0C' },
+        { label: 'OBD-II request messages', value: 'obd' },
+        { label: '0C - Engine speed', value: '02 01 0C', parent: 'obd' },
+        { label: '0D - Vehicle speed', value: '02 01 0D', parent: 'obd' },
+        { label: 'Custom messages', value: 'custom' },
     ]);
 
     // Connect button
@@ -113,18 +115,27 @@ export default function BLEScreen() {
 
             <DropDownPicker
                 containerStyle={{ marginVertical: 20 }}
-                searchable={true}
                 searchPlaceholder={'Search or add custom command'}
-                addCustomItem={true}
+                placeholder="Select request message"
                 open={showDropDown}
                 value={bleState.request}
                 items={items}
-                placeholder="Select OBD2 request message"
                 setOpen={setShowDropDown}
                 setValue={setRequest}
                 setItems={setItems}
+                searchable={true}
+                categorySelectable={false}
+                // disabled={!bleState.isConnected}
+                // disabledStyle={{opacity: 0.4}}
+                addCustomItem={true}
+                closeOnBackPressed={true}
+                listMode="SCROLLVIEW"
+                scrollViewProps={{ keyboardShouldPersistTaps: 'handled'}}
+                listParentLabelStyle={{fontWeight: 'bold'}}
+                stickyHeader={true}
+                maxHeight={350}
                 onSelectItem={(item) => {
-                    bleState.isConnected && writeToCharacteristic(item.value);
+                    writeToCharacteristic(item.value);
                 }}
             />
 
