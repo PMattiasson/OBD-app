@@ -66,8 +66,8 @@ function dataReducer(data, action) {
 }
 
 const initialData = {
-    description: 'Vehicle speed',
-    unit: 'km/h',
-    value: 100,
-    arr: [100],
+    description: '',
+    unit: '',
+    value: null,
+    arr: [],
 };

@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { PermissionsAndroid, Platform } from 'react-native';
 import base64 from 'react-native-base64';
 import { BleManager } from 'react-native-ble-plx';
+import { useDataDispatch } from './DataContext';
+import { decodePID } from './Decoder';
 
 const BLEManager = new BleManager();
 
@@ -21,6 +23,8 @@ export default function useBLE() {
     const [adapterState, setAdapterState] = useState();
     const [subscriptions, setSubscriptions] = useState([]);
     const connectionSubscription = useRef();
+
+    const dispatch = useDataDispatch();
 
     async function requestPermissions() {
         const apiLevel = Platform.Version;
@@ -80,7 +84,7 @@ export default function useBLE() {
             setConnectedDevice(deviceConnection);
             setStatus('connected');
             await deviceConnection.discoverAllServicesAndCharacteristics();
-            connectionSubscription.current = deviceConnection.onDisconnected(handleOnDisconnect);
+            connectionSubscription.current = deviceConnection.onDisconnected(handleOnDisconnected);
             monitorCharacteristic(deviceConnection);
         } catch (err) {
             console.log('Failed to connect', err);
@@ -90,8 +94,10 @@ export default function useBLE() {
     async function disconnectFromDevice() {
         if (connectedDevice) {
             const isDeviceConnected = await connectedDevice.isConnected();
+
             connectionSubscription.current?.remove();
             connectionSubscription.current = null;
+
             if (isDeviceConnected) {
                 await connectedDevice.cancelConnection();
                 setStatus('waiting');
@@ -105,7 +111,7 @@ export default function useBLE() {
         }
     }
 
-    function handleOnDisconnect() {
+    function handleOnDisconnected() {
         console.log('Disconnected: Connection lost!');
         connectionSubscription.current?.remove();
         connectionSubscription.current = null;
@@ -133,6 +139,17 @@ export default function useBLE() {
         if (characteristic?.value != null) {
             const rawData = base64.decode(characteristic.value);
             setResponse(rawData);
+
+            const response = decodePID(rawData);
+            dispatch({
+                type: 'changed',
+                description: response.description,
+                unit: response.unit,
+            });
+            dispatch({
+                type: 'added',
+                value: response.value,
+            });
             // console.log('Response received: ', rawData);
         }
     }
