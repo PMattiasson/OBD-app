@@ -1,20 +1,7 @@
 import { StyleSheet, Dimensions } from 'react-native';
-import { MD3LightTheme as DefaultTheme } from 'react-native-paper';
 
 export const windowWidth = Dimensions.get('window').width;
 export const windowHeight = Dimensions.get('window').height;
-
-export const theme = {
-    ...DefaultTheme,
-    roundness: 2,
-    version: 3,
-    colors: {
-        ...DefaultTheme.colors,
-        primary: '#3498db',
-        secondary: '#f1c40f',
-        tertiary: '#a1b2c3',
-    },
-};
 
 export const containerStyles = StyleSheet.create({
     base: {
@@ -41,6 +28,10 @@ export const containerStyles = StyleSheet.create({
         flex: 1,
         justifyContent: 'flex-end',
     },
+    snackbar: {
+        backgroundColor: 'white',
+        borderRadius: 10,
+    },
 });
 
 export const itemStyles = StyleSheet.create({
@@ -48,6 +39,27 @@ export const itemStyles = StyleSheet.create({
         justifyContent: 'space-around',
         alignItems: 'flex-start',
         flexDirection: 'row',
+    },
+    switch: {
+        width: '60%',
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+        alignItems: 'center',
+    },
+});
+
+export const cardStyles = StyleSheet.create({
+    ble: {
+        width: '80%',
+        margin: 10,
+        borderWidth: 1,
+        borderRadius: 15,
+    },
+    home: {
+        width: '90%',
+        margin: 10,
+        borderWidth: 1,
+        borderRadius: 15,
     },
 });
 
@@ -74,6 +86,7 @@ export const buttonStyles = StyleSheet.create({
 export const styles = {
     container: { ...containerStyles },
     item: { ...itemStyles },
+    card: { ...cardStyles },
     text: { ...textStyles },
     button: { ...buttonStyles },
 };

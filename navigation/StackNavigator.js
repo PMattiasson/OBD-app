@@ -1,16 +1,15 @@
-import { View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import HomeScreen from '../screens/HomeScreen';
 import BLEScreen from '../screens/BLEScreen';
-import { containerStyles } from '../theme/styles';
+import { theme } from '../styles/theme';
 
 const Tab = createMaterialBottomTabNavigator();
 
 function TabStack() {
     return (
-        <NavigationContainer>
+        <NavigationContainer theme={theme}>
             <Tab.Navigator>
                 <Tab.Screen
                     name="Home"
@@ -20,6 +19,7 @@ function TabStack() {
                         tabBarIcon: () => {
                             return <Icon name="home" size={24} />;
                         },
+                        tabBarColor: theme.colors.tabs[0],
                     }}
                 />
                 <Tab.Screen
@@ -30,6 +30,7 @@ function TabStack() {
                         tabBarIcon: () => {
                             return <Icon name="bluetooth" size={24} />;
                         },
+                        tabBarColor: theme.colors.tabs[1],
                     }}
                 />
             </Tab.Navigator>
@@ -38,9 +39,5 @@ function TabStack() {
 }
 
 export default function StackNavigator() {
-    return (
-        <View style={containerStyles.base}>
-            <TabStack />
-        </View>
-    );
+    return <TabStack />;
 }

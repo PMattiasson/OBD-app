@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, LogBox } from 'react-native';
 import { Text, Button, Switch, Card, Snackbar } from 'react-native-paper';
-import { styles } from '../theme/styles';
-import { theme } from '../theme/theme';
+import { styles } from '../styles/styles';
+import { theme } from '../styles/theme';
 import DropDownPicker from 'react-native-dropdown-picker';
 import useBLE from '../components/useBLE';
 
@@ -110,6 +110,7 @@ export default function BLEScreen() {
             </Snackbar>
 
             <Text style={styles.text.title}>Connect to the OBD reader</Text>
+            <Text style={styles.text.base}>Select a request message to send it over Bluetooth</Text>
 
             <ConnectButton style={[styles.button.primary, { backgroundColor: buttonColor }]} />
 
@@ -125,13 +126,13 @@ export default function BLEScreen() {
                 setItems={setItems}
                 searchable={true}
                 categorySelectable={false}
-                // disabled={!bleState.isConnected}
-                // disabledStyle={{opacity: 0.4}}
+                disabled={!bleState.isConnected}
+                disabledStyle={{ opacity: 0.3 }}
                 addCustomItem={true}
                 closeOnBackPressed={true}
                 listMode="SCROLLVIEW"
-                scrollViewProps={{ keyboardShouldPersistTaps: 'handled'}}
-                listParentLabelStyle={{fontWeight: 'bold'}}
+                scrollViewProps={{ keyboardShouldPersistTaps: 'handled' }}
+                listParentLabelStyle={{ fontWeight: 'bold' }}
                 stickyHeader={true}
                 maxHeight={350}
                 onSelectItem={(item) => {
@@ -140,7 +141,7 @@ export default function BLEScreen() {
             />
 
             <View style={styles.item.row}>
-                <Card style={styles.card.card}>
+                <Card style={styles.card.ble}>
                     <Card.Content>
                         <Text style={styles.text.base}>Sent request: {bleState.request}</Text>
                         <Text style={styles.text.base}>Received response: {bleState.response}</Text>

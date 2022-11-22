@@ -3,7 +3,7 @@
 import { View, Text } from 'react-native';
 import SpeedIndicator from './Indicator';
 import Ticks from './Ticks';
-import { windowWidth as width } from '../../theme/styles';
+import { windowWidth as width } from '../../styles/styles';
 
 export default function Speedometer({ speedKPH, label, unit }) {
     // General component variables
@@ -43,7 +43,7 @@ export default function Speedometer({ speedKPH, label, unit }) {
                     justifyContent: 'center',
                 }}
             >
-                <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{speedKPH}</Text>
+                <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{speedKPH ? speedKPH : 0}</Text>
             </View>
         </View>
     );
