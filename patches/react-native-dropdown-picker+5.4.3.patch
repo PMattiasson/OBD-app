@@ -1,0 +1,67 @@
+diff --git a/node_modules/react-native-dropdown-picker/src/components/Picker.js b/node_modules/react-native-dropdown-picker/src/components/Picker.js
+index 0b06940..cbcd7e3 100644
+--- a/node_modules/react-native-dropdown-picker/src/components/Picker.js
++++ b/node_modules/react-native-dropdown-picker/src/components/Picker.js
+@@ -476,7 +476,8 @@ function Picker({
+             if ((results.length === 0 || results.findIndex(item => item[_schema.label].toLowerCase() === searchText.toLowerCase()) === -1) && addCustomItem) {
+                 results.push({
+                     [_schema.label]: searchText,
+-                    [_schema.value]: searchText.replace(' ', '-'),
++                    [_schema.value]: searchText,
++                    // [_schema.value]: searchText.replace(' ', '-'),
+                     custom: true
+                 });
+             }
+@@ -1259,7 +1260,9 @@ function Picker({
+     const onPressItem = useCallback((item, customItem = false) => {
+         if (customItem !== false) {
+             item.custom = false;
++            item.parent = 'custom';
+             setItems(state => [...state, item]);
++            return;
+         }
+ 
+         // Not a reliable method for external value changes.
+@@ -1604,6 +1607,7 @@ function Picker({
+                         style={_searchTextInputStyle}
+                         placeholder={_searchPlaceholder}
+                         placeholderTextColor={searchPlaceholderTextColor}
++                        // onSubmitEditing={() => {onPressItem(_items[0], true), setSearchText('')}}
+                         {...searchTextInputProps}
+                     />
+                 ) : listMode === LIST_MODE.MODAL && (
+diff --git a/node_modules/react-native-dropdown-picker/src/components/RenderListItem.js b/node_modules/react-native-dropdown-picker/src/components/RenderListItem.js
+index 110a300..b519375 100644
+--- a/node_modules/react-native-dropdown-picker/src/components/RenderListItem.js
++++ b/node_modules/react-native-dropdown-picker/src/components/RenderListItem.js
+@@ -148,7 +148,7 @@ function RenderListItem({
+      * onPress.
+      */
+     const __onPress = useCallback(() => {
+-        if (parent === null && ! categorySelectable && selectable !== true) {
++        if (parent === null && ! categorySelectable && selectable !== true && !custom) {
+             return;
+         }
+ 
+@@ -165,9 +165,18 @@ function RenderListItem({
+     return (
+         <TouchableOpacity style={_listItemContainerStyle} onPress={__onPress} onLayout={onLayout} {...props} disabled={selectable === false || disabled} testID={item.testID}>
+             {IconComponent}
+-            <Text style={_listItemLabelStyle} {...labelProps}>
+-                {label}
+-            </Text>
++            {custom ? 
++                <Text style={[_listItemLabelStyle, {fontWeight: 'bold', fontStyle: 'normal'}]} {...labelProps}>
++                    {'Add new item: '}
++                    <Text style={[_listItemLabelStyle, {fontWeight: 'normal'}]} {...labelProps}>
++                        {label}
++                    </Text>
++                </Text>
++                :
++                <Text style={_listItemLabelStyle} {...labelProps}>
++                    {label}
++                </Text>
++            }
+             {_TickIconComponent}
+         </TouchableOpacity>
+     );
