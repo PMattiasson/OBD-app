@@ -6,9 +6,7 @@
         "android": "expo start --android",
         "ios": "expo start --ios",
         "web": "expo start --web",
-        "dev": "APP_VARIANT=development npx expo start --dev-client --tunnel",
-        "lint": "eslint .",
-        "format": "prettier --check ./components"
+        "dev": "APP_VARIANT=development npx expo start --dev-client --tunnel"
     },
     "dependencies": {
         "@config-plugins/react-native-ble-plx": "^4.0.0",
@@ -28,7 +26,7 @@
         "react-native-ble-plx": "^2.0.3",
         "react-native-chart-kit": "^6.12.0",
         "react-native-dropdown-picker": "^5.4.2",
-        "react-native-paper": "^5.0.0-rc.6",
+        "react-native-paper": "^5.0.0-rc.10",
         "react-native-reanimated": "~2.12.0",
         "react-native-safe-area-context": "4.4.1",
         "react-native-screens": "~3.18.0",
@@ -49,7 +47,7 @@
     },
     "overrides": {
         "@react-navigation/material-bottom-tabs": {
-            "react-native-paper": "^5.0.0-rc.6"
+            "react-native-paper": "^5.0.0-rc.10"
         }
     },
     "private": true
