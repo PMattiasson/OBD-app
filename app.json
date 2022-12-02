@@ -34,7 +34,16 @@
         "web": {
             "favicon": "./assets/favicon.png"
         },
-        "plugins": ["@config-plugins/react-native-ble-plx"],
+        "plugins": [
+            [
+                "with-rn-bluetooth-classic",
+                {
+                    "peripheralUsageDescription": "Allow myDevice to check bluetooth peripheral info",
+                    "alwaysUsageDescription": "Allow myDevice to always use bluetooth info",
+                    "protocols": ["com.myCompany.p1", "com.myCompany.p2"]
+                }
+            ]
+        ],
         "extra": {
             "eas": {
                 "projectId": "99a423d6-cc4a-4a56-8eae-33100da0563f"
