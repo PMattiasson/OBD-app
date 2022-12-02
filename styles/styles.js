@@ -50,8 +50,7 @@ export const itemStyles = StyleSheet.create({
 
 export const cardStyles = StyleSheet.create({
     ble: {
-        width: '80%',
-        margin: 10,
+        width: '100%',
         borderWidth: 1,
         borderRadius: 15,
     },
@@ -72,6 +71,10 @@ export const textStyles = StyleSheet.create({
     title: {
         fontSize: 20,
         fontWeight: 'bold',
+        color: 'black',
+    },
+    listItem: {
+        fontSize: 15,
         color: 'black',
     },
 });
