@@ -52,10 +52,13 @@ export default function DataScreen() {
                     subtitleStyle={styles.baseText}
                     left={(props) => <Avatar.Icon {...props} icon="engine" />}
                 />
-                <View style={styles.item.switch}>
-                    <Text>Toggle post API</Text>
-                    <Switch value={togglePostData} onValueChange={onToggleSwitch} />
-                </View>
+
+                {apiURL && (
+                    <View style={styles.item.switch}>
+                        <Text>Toggle post API</Text>
+                        <Switch value={togglePostData} onValueChange={onToggleSwitch} />
+                    </View>
+                )}
             </View>
             <View style={styles.container.center}>
                 <View style={styles.item.row}>
