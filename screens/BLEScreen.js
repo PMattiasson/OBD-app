@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, LogBox } from 'react-native';
-import { Text, Button, Switch, Card, Snackbar } from 'react-native-paper';
+import { View, LogBox, FlatList } from 'react-native';
+import { Text, Button, Switch, Card, Snackbar, List } from 'react-native-paper';
 import { styles } from '../styles/styles';
 import { theme } from '../styles/theme';
 import DropDownPicker from 'react-native-dropdown-picker';
@@ -126,7 +126,7 @@ export default function BLEScreen() {
                 setItems={setItems}
                 searchable={true}
                 categorySelectable={false}
-                disabled={!bleState.isConnected}
+                // disabled={!bleState.isConnected}
                 disabledStyle={{ opacity: 0.3 }}
                 addCustomItem={true}
                 closeOnBackPressed={true}
@@ -135,16 +135,38 @@ export default function BLEScreen() {
                 listParentLabelStyle={{ fontWeight: 'bold' }}
                 stickyHeader={true}
                 maxHeight={350}
-                onSelectItem={(item) => {
-                    writeToCharacteristic(item.value);
-                }}
+                multiple={true}
+                min={0}
+                max={2}
             />
 
             <View style={styles.item.row}>
                 <Card style={styles.card.ble}>
                     <Card.Content>
-                        <Text style={styles.text.base}>Sent request: {bleState.request}</Text>
-                        <Text style={styles.text.base}>Received response: {bleState.response}</Text>
+                        <List.Accordion
+                            title="Sent request messages"
+                            left={(props) => <List.Icon {...props} icon="send" />}
+                        >
+                            {bleState.request.map((item, index) => (
+                                <List.Item title={item} key={index} />
+                            ))}
+                        </List.Accordion>
+
+                        <List.Accordion
+                            title="Received response messages"
+                            left={(props) => (
+                                <List.Icon
+                                    {...props}
+                                    icon="send"
+                                    style={{ transform: [{ rotate: '180deg' }] }}
+                                />
+                            )}
+                        >
+                            {/* {bleState.response.map((item, index) => (
+                                <List.Item title={item} key={index} />
+                            ))} */}
+                            <List.Item title={bleState.response} />
+                        </List.Accordion>
                     </Card.Content>
                 </Card>
             </View>

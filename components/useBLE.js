@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { PermissionsAndroid, Platform } from 'react-native';
 import base64 from 'react-native-base64';
 import { BleManager } from 'react-native-ble-plx';
@@ -12,8 +12,8 @@ const CHARACTERISTIC_UUID = '0000FFE1-0000-1000-8000-00805F9B34FB';
 
 export default function useBLE() {
     const [connectedDevice, setConnectedDevice] = useState();
-    const [request, setRequest] = useState('');
-    const [response, setResponse] = useState('');
+    const [request, setRequest] = useState([]);
+    const [response, setResponse] = useState([]);
 
     const [status, setStatus] = useState('waiting');
 
@@ -143,29 +143,34 @@ export default function useBLE() {
             const response = decodePID(rawData);
             dispatch({
                 type: 'changed',
-                description: response.description,
-                unit: response.unit,
+                description: response?.description,
+                unit: response?.unit,
             });
             dispatch({
                 type: 'added',
-                value: response.value,
+                value: response?.value,
             });
             // console.log('Response received: ', rawData);
         }
     }
 
-    async function writeToCharacteristic(message) {
-        try {
-            await BLEManager.writeCharacteristicWithResponseForDevice(
-                connectedDevice?.id,
-                SERVICE_UUID,
-                CHARACTERISTIC_UUID,
-                base64.encode(message + '\n'),
-            );
-        } catch (err) {
-            console.log(err);
-        }
-    }
+    const writeToCharacteristic = useCallback(
+        async (messages) => {
+            try {
+                for (const message of messages) {
+                    await BLEManager.writeCharacteristicWithResponseForDevice(
+                        connectedDevice?.id,
+                        SERVICE_UUID,
+                        CHARACTERISTIC_UUID,
+                        base64.encode(message + '\n'),
+                    );
+                }
+            } catch (err) {
+                console.log(err);
+            }
+        },
+        [connectedDevice?.id],
+    );
 
     // Bluetooth adapter state
     useEffect(() => {
@@ -182,12 +187,19 @@ export default function useBLE() {
         };
     }, []);
 
+    // Get permissions on hook mount and disconnect from device when unmounted
     useEffect(() => {
         requestPermissions();
         return () => {
             disconnectFromDevice();
         };
     }, []);
+
+    // Handle requests
+    useEffect(() => {
+        // TODO handle individual insertion and removal of requests
+        writeToCharacteristic(request);
+    }, [request, writeToCharacteristic]);
 
     return {
         bleState: {
