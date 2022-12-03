@@ -1,7 +1,7 @@
 // https://kenjdavidson.com/react-native-bluetooth-classic/react-native/rn-bluetooth-classic/
 // https://github.com/kenjdavidson/react-native-bluetooth-classic-apps/tree/main/BluetoothClassicExample
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { PermissionsAndroid, Platform } from 'react-native';
 import RNBluetoothClassic, { BluetoothDevice } from 'react-native-bluetooth-classic';
 
@@ -13,7 +13,11 @@ export default function useBluetooth() {
         discovering: false,
         bluetoothEnabled: false,
         connection: false,
+        data: null,
     });
+    const [data, setData] = useState();
+    const connectionSubscription = useRef();
+    const readSubscription = useRef();
 
     let toggleAccept = state.accepting ? cancelAcceptConnections : acceptConnections;
 
@@ -136,6 +140,10 @@ export default function useBluetooth() {
 
             setState({ ...state, connection: connection });
             // initializeRead();
+
+            connectionSubscription.current =
+                RNBluetoothClassic.onDeviceDisconnected(onDeviceDisconnected);
+            readSubscription.current = state.device.onDataReceived((data) => onDataReceived(data));
         } catch (error) {
             console.error(`Connection failed: ${error.message}`);
         }
@@ -144,10 +152,31 @@ export default function useBluetooth() {
     async function disconnect() {
         try {
             const disconnected = await state.device.disconnect();
+            unsubscribe();
             setState({ ...state, connection: !disconnected });
+            console.log('Disconnected from device');
         } catch (error) {
             console.error(`Disconnect failed: ${error.message}`);
         }
+    }
+
+    async function onDeviceDisconnected() {
+        unsubscribe();
+        setState({ ...state, connection: false });
+        console.log('Disconnected: Connection lost!');
+    }
+
+    async function onDataReceived(event) {
+        console.log('Data received:', event.data);
+        // setState({ ...state, data: event.data });
+        setData(event.data);
+    }
+
+    function unsubscribe() {
+        connectionSubscription.current?.remove();
+        connectionSubscription.current = null;
+        readSubscription.current?.remove();
+        readSubscription.current = null;
     }
 
     function setDevice(device) {
@@ -155,8 +184,8 @@ export default function useBluetooth() {
         // console.log(state.device);
     }
 
-    // On component mount
     useEffect(() => {
+        // On component mount
         (async () => {
             const enabled = await RNBluetoothClassic.isBluetoothEnabled();
             const paired = await RNBluetoothClassic.getBondedDevices();
@@ -167,8 +196,18 @@ export default function useBluetooth() {
             setState({ ...state, bluetoothEnabled: event.enabled });
         });
 
+        // On component unmount
         return () => {
             stateSubscription.remove();
+
+            (async () => {
+                if (state.connection) {
+                    await disconnect();
+                }
+                if (state.discovering) {
+                    await cancelDiscovery();
+                }
+            })();
         };
     }, []);
 
