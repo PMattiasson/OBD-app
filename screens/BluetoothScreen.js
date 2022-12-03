@@ -3,17 +3,38 @@ import { useState, useEffect } from 'react';
 import { View, ScrollView } from 'react-native';
 import useBluetooth from '../components/useBluetooth';
 import { Button, List, Card } from 'react-native-paper';
+import DropDownPicker from 'react-native-dropdown-picker';
 import { styles } from '../styles/styles';
 import { theme } from '../styles/theme';
 
 export default function BluetoothScreen() {
-    const { state, getBondedDevices, toggleDiscovery, toggleAccept, toggleConnection, setDevice } =
-        useBluetooth();
+    const {
+        state,
+        getBondedDevices,
+        toggleDiscovery,
+        toggleAccept,
+        toggleConnection,
+        setDevice,
+        write,
+        request,
+        setRequest,
+        response,
+    } = useBluetooth();
 
     // Connect button
     const [buttonIcon, setButtonIcon] = useState('bluetooth');
     const [buttonText, setButtonText] = useState('Connect');
     const [buttonColor, setButtonColor] = useState(theme.colors.primary);
+
+    // Dropdown menu
+    const [message, setMessage] = useState('');
+    const [showDropDown, setShowDropDown] = useState(false);
+    const [items, setItems] = useState([
+        { label: 'OBD-II request messages', value: 'obd' },
+        { label: '0C - Engine speed', value: '02 01 0C', parent: 'obd' },
+        { label: '0D - Vehicle speed', value: '02 01 0D', parent: 'obd' },
+        { label: 'Custom messages', value: 'custom' },
+    ]);
 
     useEffect(() => {
         if (state.connection) {
@@ -93,6 +114,60 @@ export default function BluetoothScreen() {
                     </List.Accordion>
                 </Card.Content>
             </Card>
+
+            <DropDownPicker
+                containerStyle={{ marginVertical: 20 }}
+                searchPlaceholder={'Search or add custom command'}
+                placeholder="Select request message"
+                open={showDropDown}
+                value={request}
+                items={items}
+                setOpen={setShowDropDown}
+                setValue={setRequest}
+                setItems={setItems}
+                searchable={true}
+                categorySelectable={false}
+                disabled={!state.connection}
+                disabledStyle={{ opacity: 0.3 }}
+                addCustomItem={true}
+                closeOnBackPressed={true}
+                listMode="SCROLLVIEW"
+                scrollViewProps={{ keyboardShouldPersistTaps: 'handled' }}
+                listParentLabelStyle={{ fontWeight: 'bold' }}
+                stickyHeader={true}
+                maxHeight={350}
+                multiple={true}
+                min={0}
+                max={2}
+            />
+
+            <View style={styles.item.row}>
+                <Card style={styles.card.ble}>
+                    <Card.Content>
+                        <List.Accordion
+                            title="Sent request messages"
+                            left={(props) => <List.Icon {...props} icon="send" />}
+                        >
+                            {request.map((item, index) => (
+                                <List.Item title={item} key={index} />
+                            ))}
+                        </List.Accordion>
+
+                        <List.Accordion
+                            title="Received response messages"
+                            left={(props) => (
+                                <List.Icon
+                                    {...props}
+                                    icon="send"
+                                    style={{ transform: [{ rotate: '180deg' }] }}
+                                />
+                            )}
+                        >
+                            <List.Item title={response} />
+                        </List.Accordion>
+                    </Card.Content>
+                </Card>
+            </View>
         </View>
     );
 }

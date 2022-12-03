@@ -1,9 +1,11 @@
 // https://kenjdavidson.com/react-native-bluetooth-classic/react-native/rn-bluetooth-classic/
 // https://github.com/kenjdavidson/react-native-bluetooth-classic-apps/tree/main/BluetoothClassicExample
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { PermissionsAndroid, Platform } from 'react-native';
 import RNBluetoothClassic, { BluetoothDevice } from 'react-native-bluetooth-classic';
+import { useDataDispatch } from './DataContext';
+import { decodePID } from './Decoder';
 
 export default function useBluetooth() {
     const [state, setState] = useState({
@@ -16,7 +18,11 @@ export default function useBluetooth() {
         loading: false,
         data: null,
     });
-    const [data, setData] = useState();
+    const [request, setRequest] = useState([]);
+    const [response, setResponse] = useState();
+
+    const dispatch = useDataDispatch();
+
     const connectionSubscription = useRef();
     const readSubscription = useRef();
 
@@ -169,10 +175,43 @@ export default function useBluetooth() {
     }
 
     async function onDataReceived(event) {
-        console.log('Data received:', event.data);
-        // setState({ ...state, data: event.data });
-        setData(event.data);
+        const data = event.data;
+        if (data !== null) {
+            setResponse(data);
+
+            const response = decodePID(data);
+
+            dispatch({
+                type: 'changed',
+                description: response?.description,
+                unit: response?.unit,
+            });
+            dispatch({
+                type: 'added',
+                value: response?.value,
+            });
+        }
+        console.log('Data received:', data);
     }
+
+    const write = useCallback(
+        async (messages) => {
+            try {
+                for (const message of messages) {
+                    await state.device?.write(message + '\n');
+                }
+            } catch (error) {
+                console.error('Could not write:', error);
+            }
+        },
+        [state.device],
+    );
+
+    // Handle requests
+    useEffect(() => {
+        // TODO handle individual insertion and removal of requests
+        write(request);
+    }, [request, write]);
 
     function unsubscribe() {
         connectionSubscription.current?.remove();
@@ -220,5 +259,9 @@ export default function useBluetooth() {
         toggleAccept,
         toggleConnection,
         setDevice,
+        write,
+        request,
+        setRequest,
+        response,
     };
 }
