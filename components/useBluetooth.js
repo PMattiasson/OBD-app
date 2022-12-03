@@ -141,6 +141,8 @@ export default function useBluetooth() {
         try {
             setState({ ...state, loading: true });
 
+            console.log('Connecting to', state.device.name);
+
             let connection = await state.device.isConnected();
             if (!connection) {
                 connection = await state.device.connect();
@@ -150,7 +152,10 @@ export default function useBluetooth() {
 
             connectionSubscription.current =
                 RNBluetoothClassic.onDeviceDisconnected(onDeviceDisconnected);
+
             readSubscription.current = state.device.onDataReceived((data) => onDataReceived(data));
+
+            console.log('Successfully connected!');
         } catch (error) {
             console.error(`Connection failed: ${error.message}`);
             setState({ ...state, loading: false });
@@ -191,7 +196,7 @@ export default function useBluetooth() {
                 value: response?.value,
             });
         }
-        console.log('Data received:', data);
+        // console.log('Data received:', data);
     }
 
     const write = useCallback(
