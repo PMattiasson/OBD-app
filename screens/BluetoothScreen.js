@@ -7,7 +7,7 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import { styles } from '../styles/styles';
 import { theme } from '../styles/theme';
 
-export default function BluetoothScreen() {
+export default function BluetoothScreen({navigation}) {
     const {
         state,
         getBondedDevices,
@@ -27,7 +27,6 @@ export default function BluetoothScreen() {
     const [buttonColor, setButtonColor] = useState(theme.colors.primary);
 
     // Dropdown menu
-    const [message, setMessage] = useState('');
     const [showDropDown, setShowDropDown] = useState(false);
     const [items, setItems] = useState([
         { label: 'OBD-II request messages', value: 'obd' },
@@ -74,46 +73,11 @@ export default function BluetoothScreen() {
             <Button
                 style={styles.button.primary}
                 mode={'contained'}
-                icon={'magnify'}
-                onPress={toggleDiscovery}
-                disabled={!state.bluetoothEnabled}
-                loading={state.discovering}
+                icon={'devices'}
+                onPress={() => navigation.navigate('Devices')}
             >
-                {!state.discovering ? 'Discover devices' : 'Discovering...'}
+                Devices
             </Button>
-
-            <Card style={styles.card.ble}>
-                <Card.Content>
-                    <List.Accordion
-                        title="Paired devices"
-                        left={(props) => <List.Icon {...props} icon="devices" />}
-                    >
-                        <ScrollView style={{ maxHeight: 300 }}>
-                            {state.devices.length > 0 &&
-                                state.devices.map((device, index) => (
-                                    <List.Item
-                                        left={(props) =>
-                                            device === state.device && (
-                                                <List.Icon
-                                                    {...props}
-                                                    icon="check-circle"
-                                                    color="limegreen"
-                                                />
-                                            )
-                                        }
-                                        title={device.name}
-                                        description={device.address}
-                                        key={index}
-                                        onPress={() => {
-                                            if (state.device == device) setDevice(undefined);
-                                            else setDevice(device);
-                                        }}
-                                    />
-                                ))}
-                        </ScrollView>
-                    </List.Accordion>
-                </Card.Content>
-            </Card>
 
             <DropDownPicker
                 containerStyle={{ marginVertical: 20 }}
