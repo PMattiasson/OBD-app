@@ -16,7 +16,6 @@ export default function useBluetooth() {
         bluetoothEnabled: false,
         connection: false,
         loading: false,
-        data: null,
     });
     const [request, setRequest] = useState([]);
     const [response, setResponse] = useState();
@@ -154,6 +153,7 @@ export default function useBluetooth() {
             readSubscription.current = state.device.onDataReceived((data) => onDataReceived(data));
         } catch (error) {
             console.error(`Connection failed: ${error.message}`);
+            setState({ ...state, loading: false });
         }
     }
 
@@ -230,7 +230,8 @@ export default function useBluetooth() {
         (async () => {
             const enabled = await RNBluetoothClassic.isBluetoothEnabled();
             const paired = await RNBluetoothClassic.getBondedDevices();
-            setState({ ...state, bluetoothEnabled: enabled, devices: paired });
+            const device = paired.find((d) => d.name === 'HC-05');
+            setState({ ...state, bluetoothEnabled: enabled, devices: paired, device: device });
         })();
 
         const stateSubscription = RNBluetoothClassic.onStateChanged((event) => {
