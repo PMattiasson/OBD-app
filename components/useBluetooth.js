@@ -13,6 +13,7 @@ export default function useBluetooth() {
         discovering: false,
         bluetoothEnabled: false,
         connection: false,
+        loading: false,
         data: null,
     });
     const [data, setData] = useState();
@@ -133,13 +134,14 @@ export default function useBluetooth() {
 
     async function connect() {
         try {
+            setState({ ...state, loading: true });
+
             let connection = await state.device.isConnected();
             if (!connection) {
                 connection = await state.device.connect();
             }
 
-            setState({ ...state, connection: connection });
-            // initializeRead();
+            setState({ ...state, connection: connection, loading: false });
 
             connectionSubscription.current =
                 RNBluetoothClassic.onDeviceDisconnected(onDeviceDisconnected);

@@ -20,6 +20,9 @@ export default function BluetoothScreen() {
             setButtonText('Connected');
             setButtonIcon('bluetooth-connect');
             setButtonColor('limegreen');
+        } else if (state.loading) {
+            setButtonText('Connecting...');
+            setButtonColor('orange');
         } else if (state.discovering) {
             setButtonText('Scanning');
             setButtonIcon('refresh');
@@ -32,7 +35,7 @@ export default function BluetoothScreen() {
             setButtonIcon('bluetooth-off');
             setButtonColor('red');
         }
-    }, [state.connection, state.discovering, state.bluetoothEnabled]);
+    }, [state.connection, state.discovering, state.bluetoothEnabled, state.loading]);
 
     return (
         <View style={styles.container.center}>
@@ -42,6 +45,7 @@ export default function BluetoothScreen() {
                 icon={buttonIcon}
                 onPress={toggleConnection}
                 disabled={!state.bluetoothEnabled || !state.device}
+                loading={state.loading}
             >
                 {buttonText}
             </Button>
@@ -49,6 +53,7 @@ export default function BluetoothScreen() {
             <Button
                 style={styles.button.primary}
                 mode={'contained'}
+                icon={'magnify'}
                 onPress={toggleDiscovery}
                 disabled={!state.bluetoothEnabled}
                 loading={state.discovering}
