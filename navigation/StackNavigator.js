@@ -2,7 +2,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import HomeScreen from '../screens/HomeScreen';
-import BLEScreen from '../screens/BLEScreen';
+import BluetoothScreen from '../screens/BluetoothScreen';
 import { theme } from '../styles/theme';
 
 const Tab = createMaterialBottomTabNavigator();
@@ -17,14 +17,14 @@ function TabStack() {
                     options={{
                         tabBarLabel: 'Home',
                         tabBarIcon: () => {
-                            return <Icon name="home" size={24} />;
+                            return <Icon name="speedometer" size={24} />;
                         },
                         tabBarColor: theme.colors.tabs[0],
                     }}
                 />
                 <Tab.Screen
                     name="BLE"
-                    component={BLEScreen}
+                    component={BluetoothScreen}
                     options={{
                         tabBarLabel: 'Connect',
                         tabBarIcon: () => {
