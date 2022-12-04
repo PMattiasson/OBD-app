@@ -33,6 +33,9 @@ export default function BluetoothScreen({navigation}) {
         { label: '0C - Engine speed', value: '02 01 0C', parent: 'obd' },
         { label: '0D - Vehicle speed', value: '02 01 0D', parent: 'obd' },
         { label: 'Custom messages', value: 'custom' },
+        { label: 'Set update frequency: 2 Hz', value: 'CMD+RATE?500', parent: 'custom' },
+        { label: 'Set update frequency: 10 Hz', value: 'CMD+RATE?100', parent: 'custom' },
+        { label: 'Set update frequency: 20 Hz', value: 'CMD+RATE?50', parent: 'custom' },
     ]);
 
     useEffect(() => {
