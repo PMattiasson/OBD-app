@@ -102,7 +102,6 @@ export default function BluetoothScreen({navigation}) {
                 scrollViewProps={{ keyboardShouldPersistTaps: 'handled' }}
                 listParentLabelStyle={{ fontWeight: 'bold' }}
                 stickyHeader={true}
-                maxHeight={350}
                 multiple={true}
                 min={0}
                 max={2}
