@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { View } from 'react-native';
 import { Svg, G, Line, Text } from 'react-native-svg';
 import polarToCartesian from '../../utils/polarToCartesian';
@@ -6,7 +7,7 @@ import range from '../../utils/range';
 const ticksMajor = 14;
 const ticksMinor = 10 * (ticksMajor - 1);
 
-export default function Ticks({
+const Ticks = memo(function Ticks({
     maxSpeed,
     angleRange,
     angleOffset,
@@ -99,4 +100,6 @@ export default function Ticks({
             </Svg>
         </View>
     );
-}
+});
+
+export default Ticks;
