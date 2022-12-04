@@ -5,13 +5,15 @@ import Animated, {
     useSharedValue,
     useAnimatedStyle,
     interpolate,
-    withTiming,
+    withSpring,
 } from 'react-native-reanimated';
 import polarToCartesian from '../../utils/polarToCartesian';
 
 const AnimatedView = Animated.createAnimatedComponent(View);
 
 export default function SpeedIndicator({ angle, width, radius, center, angleOffset }) {
+    const animationOptions = { damping: 20, mass: 1, stiffness: 200 };
+
     const animationRotation = useSharedValue(0);
 
     const animationStyle = useAnimatedStyle(() => {
@@ -19,10 +21,8 @@ export default function SpeedIndicator({ angle, width, radius, center, angleOffs
         return { transform: [{ rotate: `${rotation}deg` }] };
     });
 
-    // animationConfig = {};
-
     useEffect(() => {
-        animationRotation.value = withTiming(angle, { duration: 900 });
+        animationRotation.value = withSpring(angle, animationOptions);
     }, [angle]);
 
     const { x, y } = polarToCartesian(radius, angleOffset, center, center, -180);
