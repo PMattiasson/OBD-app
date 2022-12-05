@@ -5,7 +5,6 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { PermissionsAndroid, Platform } from 'react-native';
 import RNBluetoothClassic, { BluetoothDevice } from 'react-native-bluetooth-classic';
 import { useDataDispatch } from './DataContext';
-import { decodePID } from './Decoder';
 
 export default function useBluetooth() {
     const [state, setState] = useState({
@@ -184,16 +183,12 @@ export default function useBluetooth() {
         if (data !== null) {
             setResponse(data);
 
-            const response = decodePID(data);
-
-            dispatch({
-                type: 'changed',
-                description: response?.description,
-                unit: response?.unit,
-            });
-            dispatch({
-                type: 'added',
-                value: response?.value,
+            const responses = data.split('\n');
+            responses.map((res) => {
+                dispatch({
+                    type: 'decode',
+                    message: res,
+                });
             });
         }
         // console.log('Data received:', data);
