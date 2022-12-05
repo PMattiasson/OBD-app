@@ -20,9 +20,11 @@ export default function DataScreen() {
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ data: `${data.description}: ${data.value} ${data.unit}` }),
+                body: JSON.stringify({
+                    data: `${data.VehicleSpeed.description}: ${data.VehicleSpeed.value} ${data.VehicleSpeed.unit}`,
+                }),
             }).catch((error) => console.log(error));
-            const text = await response.text();
+            const text = await response?.text();
             return text;
         };
 
@@ -32,13 +34,13 @@ export default function DataScreen() {
         //         postData().then((res) => console.log('Server response: ', res));
         //     }, 5000);
         // }
-        if (togglePostData) {
+        if (togglePostData && data?.VehicleSpeed) {
             postData();
             // postData().then((res) => console.log('Server response: ', res));
         }
 
         // return () => clearInterval(interval);
-    }, [data.value, data.description, data.unit, togglePostData, apiURL]);
+    }, [data.VehicleSpeed, togglePostData, apiURL]);
 
     return (
         <View style={styles.container.base}>
