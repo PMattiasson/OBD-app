@@ -1,25 +1,14 @@
-/* 
-Reducer:
-State
-- Object information
-- Data array
-Dispatch
-- Current value
-- Data array
-- String
-- Add new item
-- Remove first item 
-*/
-
-// Context wrapper for components that need the data
-
 import { createContext, useContext, useReducer } from 'react';
+import { decodePID } from './Decoder';
+import objectMap from '../utils/objectMap';
 
 export const DataContext = createContext(null);
 export const DataDispatchContext = createContext(null);
 
+let myPIDs = [];
+
 export function DataProvider({ children }) {
-    const [data, dispatch] = useReducer(dataReducer, initialData);
+    const [data, dispatch] = useReducer(dataReducer, {});
 
     return (
         <DataContext.Provider value={data}>
@@ -38,36 +27,37 @@ export function useDataDispatch() {
 
 function dataReducer(data, action) {
     switch (action.type) {
-    case 'added': {
-        return {
-            ...data,
-            value: action.value,
-            arr: [...data.arr, action.value],
-            // Add length limit
-        };
-    }
-    case 'changed': {
-        return {
-            ...data,
-            description: action.description,
-            unit: action.unit,
-        };
-    }
-    case 'deleted': {
-        return data.arr.filter((_, i) => i !== 0);
+    case 'decode': {
+        const decodedMessage = decodePID(action.message);
+
+        if (myPIDs.includes(decodedMessage.PID)) {
+            return objectMap(data, (val, key) => {
+                if (key === decodedMessage.name) {
+                    // Modify PID object
+                    return { ...val, value: decodedMessage.value };
+                } else {
+                    // No change
+                    return val;
+                }
+            });
+        } else {
+            // Add new PID object
+            myPIDs.push(decodedMessage.PID);
+            return {
+                ...data,
+                [decodedMessage.name]: {
+                    value: decodedMessage.value,
+                    description: decodedMessage.description,
+                    unit: decodedMessage.unit,
+                },
+            };
+        }
     }
     case 'reset': {
-        return { ...initialData };
+        return;
     }
     default: {
         throw Error('Unknown action: ' + action.type);
     }
     }
 }
-
-const initialData = {
-    description: '',
-    unit: '',
-    value: null,
-    arr: [],
-};
