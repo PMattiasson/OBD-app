@@ -145,7 +145,7 @@ export default function useBluetooth() {
 
             let connection = await state.device.isConnected();
             if (!connection) {
-                connection = await state.device.connect();
+                connection = await state.device.connect({ DELIMITER: '\r\n' });
             }
 
             setState({ ...state, connection: connection, loading: false });
