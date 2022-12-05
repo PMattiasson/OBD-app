@@ -40,6 +40,11 @@ export const itemStyles = StyleSheet.create({
         alignItems: 'flex-start',
         flexDirection: 'row',
     },
+    column: {
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        flexDirection: 'column',
+    },
     switch: {
         width: '60%',
         flexDirection: 'row',
