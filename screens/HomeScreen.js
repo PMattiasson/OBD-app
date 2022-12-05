@@ -61,15 +61,22 @@ export default function DataScreen() {
                 )}
             </View>
             <View style={styles.container.center}>
-                <View style={styles.item.row}>
-                    {data.value !== null && (
+                <View style={styles.item.column}>
+                    {data?.VehicleSpeed && (
                         <Text style={styles.text.title}>
-                            {data.description}: {data.value} {data.unit}
+                            {data.VehicleSpeed.description}: {data.VehicleSpeed.value}{' '}
+                            {data.VehicleSpeed.unit}
+                        </Text>
+                    )}
+                    {data?.EngineRPM && (
+                        <Text style={styles.text.title}>
+                            {data.EngineRPM.description}: {data.EngineRPM.value}{' '}
+                            {data.EngineRPM.unit}
                         </Text>
                     )}
                 </View>
             </View>
-            <Speedometer speedKPH={data?.value} />
+            <Speedometer speedKPH={data?.VehicleSpeed ? data.VehicleSpeed.value : 0} />
         </View>
     );
 }
