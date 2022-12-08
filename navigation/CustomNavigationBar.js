@@ -11,19 +11,21 @@ export default function CustomNavigationBar({ route, navigation, back }) {
         <Appbar.Header mode="center-aligned" elevated={true} statusBarHeight={0}>
             {back ? <Appbar.BackAction onPress={navigation.goBack} /> : null}
             <Appbar.Content title={getHeaderTitle(route)} />
-            <Menu
-                visible={visible}
-                onDismiss={closeMenu}
-                anchor={<Appbar.Action icon={'dots-vertical'} onPress={openMenu} />}
-            >
-                <Menu.Item
-                    onPress={() => {
-                        closeMenu();
-                        navigation.navigate('Settings');
-                    }}
-                    title="Settings"
-                />
-            </Menu>
+            {getHeaderTitle(route) !== 'Settings' && (
+                <Menu
+                    visible={visible}
+                    onDismiss={closeMenu}
+                    anchor={<Appbar.Action icon={'dots-vertical'} onPress={openMenu} />}
+                >
+                    <Menu.Item
+                        onPress={() => {
+                            closeMenu();
+                            navigation.navigate('Settings');
+                        }}
+                        title="Settings"
+                    />
+                </Menu>
+            )}
         </Appbar.Header>
     );
 }
