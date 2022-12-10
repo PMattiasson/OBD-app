@@ -26,6 +26,19 @@ const responsePIDs = [
         max: 255,
         value: 0,
     },
+    {
+        name: 'CoolantTemperature',
+        description: 'Engine coolant temperature',
+        PID: '05',
+        mode: modeCurrentData,
+        dataBytes: 1,
+        unit: '°C',
+        scale: 1,
+        offset: -40,
+        min: -40,
+        max: 215,
+        value: 0,
+    },
 ];
 
 export default responsePIDs;

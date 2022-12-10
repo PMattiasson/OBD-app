@@ -10,12 +10,7 @@ import { theme } from '../styles/theme';
 export default function BluetoothScreen({navigation}) {
     const {
         state,
-        getBondedDevices,
-        toggleDiscovery,
-        toggleAccept,
         toggleConnection,
-        setDevice,
-        write,
         request,
         setRequest,
         response,
@@ -30,8 +25,9 @@ export default function BluetoothScreen({navigation}) {
     const [showDropDown, setShowDropDown] = useState(false);
     const [items, setItems] = useState([
         { label: 'OBD-II request messages', value: 'obd' },
-        { label: '0C - Engine speed', value: '02 01 0C', parent: 'obd' },
         { label: '0D - Vehicle speed', value: '02 01 0D', parent: 'obd' },
+        { label: '0C - Engine speed', value: '02 01 0C', parent: 'obd' },
+        { label: '05 - Coolant temperature', value: '02 01 05', parent: 'obd' },
         { label: 'Custom messages', value: 'custom' },
         { label: 'Set update frequency: 2 Hz', value: 'CMD+RATE?500', parent: 'custom' },
         { label: 'Set update frequency: 10 Hz', value: 'CMD+RATE?100', parent: 'custom' },
@@ -61,7 +57,7 @@ export default function BluetoothScreen({navigation}) {
     }, [state.connection, state.discovering, state.bluetoothEnabled, state.loading]);
 
     return (
-        <View style={styles.container.center}>
+        <View style={[styles.container.center, {justifyContent: 'flex-start'}]}>
             <Button
                 style={[styles.button.primary, { backgroundColor: buttonColor }]}
                 mode={'contained'}
@@ -103,8 +99,7 @@ export default function BluetoothScreen({navigation}) {
                 listParentLabelStyle={{ fontWeight: 'bold' }}
                 stickyHeader={true}
                 multiple={true}
-                min={0}
-                max={2}
+                maxHeight={300}
             />
 
             <View style={styles.item.row}>
