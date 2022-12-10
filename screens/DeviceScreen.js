@@ -17,7 +17,7 @@ export default function DeviceScreen() {
     // }, [state.devices]);
 
     return (
-        <View style={styles.container.center}>
+        <View style={[styles.container.center, { justifyContent: 'flex-start' }]}>
             <Button
                 style={styles.button.primary}
                 mode={'contained'}
