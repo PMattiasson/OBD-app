@@ -168,6 +168,8 @@ export default function useBluetooth() {
             setState({ ...state, connection: !disconnected });
             console.log('Disconnected from device');
         } catch (error) {
+            unsubscribe();
+            setState({ ...state, connection: false });
             console.error(`Disconnect failed: ${error.message}`);
         }
     }
