@@ -232,9 +232,16 @@ export default function useBluetooth() {
     useEffect(() => {
         // On component mount
         (async () => {
-            const enabled = await RNBluetoothClassic.isBluetoothEnabled();
-            const paired = await RNBluetoothClassic.getBondedDevices();
-            const device = paired.find((d) => d.name === 'HC-05');
+            let paired = undefined;
+            let device = undefined;
+            let enabled = await RNBluetoothClassic.isBluetoothEnabled();
+            if (!enabled) {
+                enabled = await RNBluetoothClassic.requestBluetoothEnabled();
+            }
+            if (enabled) {
+                paired = await RNBluetoothClassic.getBondedDevices();
+                device = paired.find((d) => d.name === 'HC-05');
+            }
             setState({ ...state, bluetoothEnabled: enabled, devices: paired, device: device });
         })();
 
