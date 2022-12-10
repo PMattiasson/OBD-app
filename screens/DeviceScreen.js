@@ -45,8 +45,7 @@ export default function DeviceScreen() {
                                 description={device.address}
                                 key={index}
                                 onPress={() => {
-                                    if (state.device == device) setDevice(undefined);
-                                    else setDevice(device);
+                                    if (state.device !== device) setDevice(device);
                                 }}
                             />
                         ))}
