@@ -62,22 +62,21 @@ export default function DataScreen() {
                     </View>
                 )}
             </View>
+
             <View style={styles.container.center}>
                 <View style={styles.item.column}>
-                    {data?.VehicleSpeed && (
-                        <Text style={styles.text.title}>
-                            {data.VehicleSpeed.description}: {data.VehicleSpeed.value}{' '}
-                            {data.VehicleSpeed.unit}
-                        </Text>
-                    )}
-                    {data?.EngineRPM && (
-                        <Text style={styles.text.title}>
-                            {data.EngineRPM.description}: {data.EngineRPM.value}{' '}
-                            {data.EngineRPM.unit}
-                        </Text>
-                    )}
+                    {Object.entries(data).map(([key, val], i) => {
+                        {
+                            return (
+                                <Text style={styles.text.title} key={i}>
+                                    {val.description}: {val.value} {val.unit}
+                                </Text>
+                            );
+                        }
+                    })}
                 </View>
             </View>
+
             <Speedometer speedKPH={data?.VehicleSpeed ? data.VehicleSpeed.value : 0} />
         </View>
     );
