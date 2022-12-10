@@ -175,10 +175,10 @@ export default function useBluetooth() {
     async function onDeviceDisconnected() {
         const connection = await state.device.isConnected();
         if (!connection) {
-        unsubscribe();
-        setState({ ...state, connection: false });
-        console.log('Disconnected: Connection lost!');
-    }
+            unsubscribe();
+            setState({ ...state, connection: false });
+            console.log('Disconnected: Connection lost!');
+        }
     }
 
     async function onDataReceived(event) {
@@ -225,7 +225,6 @@ export default function useBluetooth() {
 
     function setDevice(device) {
         setState({ ...state, device: device });
-        // console.log(state.device);
     }
 
     useEffect(() => {
@@ -237,14 +236,8 @@ export default function useBluetooth() {
             setState({ ...state, bluetoothEnabled: enabled, devices: paired, device: device });
         })();
 
-        const stateSubscription = RNBluetoothClassic.onStateChanged((event) => {
-            setState({ ...state, bluetoothEnabled: event.enabled });
-        });
-
         // On component unmount
         return () => {
-            stateSubscription.remove();
-
             (async () => {
                 if (state.connection) {
                     await disconnect();
@@ -255,6 +248,15 @@ export default function useBluetooth() {
             })();
         };
     }, []);
+
+    useEffect(() => {
+        const stateSubscription = RNBluetoothClassic.onStateChanged((event) => {
+            setState({ ...state, bluetoothEnabled: event.enabled });
+        });
+        return () => {
+            stateSubscription.remove();
+        };
+    }, [state.bluetoothEnabled]);
 
     return {
         state,
