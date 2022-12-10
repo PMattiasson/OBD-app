@@ -173,9 +173,12 @@ export default function useBluetooth() {
     }
 
     async function onDeviceDisconnected() {
+        const connection = await state.device.isConnected();
+        if (!connection) {
         unsubscribe();
         setState({ ...state, connection: false });
         console.log('Disconnected: Connection lost!');
+    }
     }
 
     async function onDataReceived(event) {
