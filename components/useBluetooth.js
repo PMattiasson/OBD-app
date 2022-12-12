@@ -2,20 +2,13 @@
 // https://github.com/kenjdavidson/react-native-bluetooth-classic-apps/tree/main/BluetoothClassicExample
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { PermissionsAndroid, Platform } from 'react-native';
-import RNBluetoothClassic, { BluetoothDevice } from 'react-native-bluetooth-classic';
+import RNBluetoothClassic from 'react-native-bluetooth-classic';
 import { useDataDispatch } from './DataContext';
+import { useBluetoothState } from '../context/BluetoothContext';
 
 export default function useBluetooth() {
-    const [state, setState] = useState({
-        device: undefined,
-        devices: [],
-        accepting: false,
-        discovering: false,
-        bluetoothEnabled: false,
-        connection: false,
-        loading: false,
-    });
+    const { state, setState } = useBluetoothState();
+
     const [request, setRequest] = useState([]);
     const [response, setResponse] = useState();
 
@@ -24,38 +17,9 @@ export default function useBluetooth() {
     const connectionSubscription = useRef();
     const readSubscription = useRef();
 
-    let toggleAccept = state.accepting ? cancelAcceptConnections : acceptConnections;
-
     let toggleDiscovery = state.discovering ? cancelDiscovery : startDiscovery;
 
     let toggleConnection = state.connection ? disconnect : connect;
-
-    async function requestPermissions() {
-        const apiLevel = Platform.Version;
-
-        try {
-            if (apiLevel < 31) {
-                const isPermissionGranted = await PermissionsAndroid.request(
-                    PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-                );
-                return isPermissionGranted === PermissionsAndroid.RESULTS.GRANTED;
-            } else {
-                const granted = await PermissionsAndroid.requestMultiple([
-                    PermissionsAndroid.PERMISSIONS.ANDROID.BLUETOOTH_SCAN,
-                    PermissionsAndroid.PERMISSIONS.ANDROID.BLUETOOTH_CONNECT,
-                    PermissionsAndroid.PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
-                ]);
-
-                const isPermissionGranted = Object.values(granted).every(
-                    (val) => val === PermissionsAndroid.RESULTS.GRANTED,
-                );
-
-                return isPermissionGranted;
-            }
-        } catch (err) {
-            console.warn(err);
-        }
-    }
 
     async function updateBondedDevices() {
         try {
@@ -68,12 +32,6 @@ export default function useBluetooth() {
 
     async function startDiscovery() {
         try {
-            let granted = await requestPermissions();
-
-            if (!granted) {
-                throw new Error('Permissions not granted');
-            }
-
             setState({ ...state, discovering: true });
 
             let devices = [...state.devices];
@@ -105,37 +63,6 @@ export default function useBluetooth() {
         }
     }
 
-    async function acceptConnections() {
-        if (state.accepting) {
-            console.log('Already accepting connection');
-            return;
-        }
-
-        setState({ ...state, accepting: true });
-
-        try {
-            let device = await RNBluetoothClassic.accept();
-            setState({ ...state, device: device });
-        } catch (e) {
-            console.error(e);
-        } finally {
-            setState({ ...state, accepting: false });
-        }
-    }
-
-    async function cancelAcceptConnections() {
-        if (!state.accepting) {
-            return;
-        }
-
-        try {
-            let cancelled = await RNBluetoothClassic.cancelAccept();
-            setState({ ...state, accepting: !cancelled });
-        } catch (e) {
-            console.error(e);
-        }
-    }
-
     async function connect() {
         try {
             setState({ ...state, loading: true });
@@ -164,13 +91,13 @@ export default function useBluetooth() {
     async function disconnect() {
         try {
             const disconnected = await state.device.disconnect();
-            unsubscribe();
             setState({ ...state, connection: !disconnected });
             console.log('Disconnected from device');
         } catch (error) {
-            unsubscribe();
             setState({ ...state, connection: false });
             console.error(`Disconnect failed: ${error.message}`);
+        } finally {
+            unsubscribe();
         }
     }
 
@@ -231,49 +158,9 @@ export default function useBluetooth() {
         setState({ ...state, device: device });
     }
 
-    useEffect(() => {
-        // On component mount
-        (async () => {
-            let paired = undefined;
-            let device = undefined;
-            let enabled = await RNBluetoothClassic.isBluetoothEnabled();
-            if (!enabled) {
-                enabled = await RNBluetoothClassic.requestBluetoothEnabled();
-            }
-            if (enabled) {
-                paired = await RNBluetoothClassic.getBondedDevices();
-                device = paired.find((d) => d.name === 'HC-05');
-            }
-            setState({ ...state, bluetoothEnabled: enabled, devices: paired, device: device });
-        })();
-
-        // On component unmount
-        return () => {
-            (async () => {
-                if (state.connection) {
-                    await disconnect();
-                }
-                if (state.discovering) {
-                    await cancelDiscovery();
-                }
-            })();
-        };
-    }, []);
-
-    useEffect(() => {
-        const stateSubscription = RNBluetoothClassic.onStateChanged((event) => {
-            setState({ ...state, bluetoothEnabled: event.enabled });
-        });
-        return () => {
-            stateSubscription.remove();
-        };
-    }, [state.bluetoothEnabled]);
-
     return {
-        state,
         updateBondedDevices,
         toggleDiscovery,
-        toggleAccept,
         toggleConnection,
         setDevice,
         write,
