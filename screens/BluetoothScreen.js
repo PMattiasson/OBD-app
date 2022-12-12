@@ -52,13 +52,20 @@ export default function BluetoothScreen({ navigation }) {
         }
     }, [state.connection, state.discovering, state.bluetoothEnabled, state.loading]);
 
+    // Auto-connect
+    useEffect(() => {
+        if (settings.bluetooth.autoConnect && state.device) {
+            toggleConnection();
+        }
+    }, []);
+
     useEffect(() => {
         const msgUpdateFreq = `CMD+RATE?${settings.bluetooth.updateFrequency}`;
         if (state.connection) {
             write([msgUpdateFreq]);
             console.log('Updated Bluetooth update frequency');
         }
-    }, [state.connection]);
+    }, [state.connection, settings.bluetooth.updateFrequency, write]);
 
     return (
         <View style={[styles.container.center, { justifyContent: 'flex-start' }]}>
@@ -72,15 +79,6 @@ export default function BluetoothScreen({ navigation }) {
             >
                 {buttonText}
             </Button>
-
-            {/* <Button
-                style={styles.button.primary}
-                mode={'contained'}
-                icon={'devices'}
-                onPress={() => navigation.navigate('Devices')}
-            >
-                Devices
-            </Button> */}
 
             <DropDownPicker
                 containerStyle={{ marginVertical: 20 }}
