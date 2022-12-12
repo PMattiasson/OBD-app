@@ -6,15 +6,12 @@ import { Button, List, Card } from 'react-native-paper';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { styles } from '../styles/styles';
 import { theme } from '../styles/theme';
+import { useSettings } from '../context/SettingsContext';
 
-export default function BluetoothScreen({navigation}) {
-    const {
-        state,
-        toggleConnection,
-        request,
-        setRequest,
-        response,
-    } = useBluetooth();
+export default function BluetoothScreen({ navigation }) {
+    const { state, toggleConnection, request, setRequest, response, write } = useBluetooth();
+
+    const settings = useSettings();
 
     // Connect button
     const [buttonIcon, setButtonIcon] = useState('bluetooth');
@@ -29,9 +26,6 @@ export default function BluetoothScreen({navigation}) {
         { label: '0C - Engine speed', value: '02 01 0C', parent: 'obd' },
         { label: '05 - Coolant temperature', value: '02 01 05', parent: 'obd' },
         { label: 'Custom messages', value: 'custom' },
-        { label: 'Set update frequency: 2 Hz', value: 'CMD+RATE?500', parent: 'custom' },
-        { label: 'Set update frequency: 10 Hz', value: 'CMD+RATE?100', parent: 'custom' },
-        { label: 'Set update frequency: 20 Hz', value: 'CMD+RATE?50', parent: 'custom' },
     ]);
 
     useEffect(() => {
@@ -56,8 +50,16 @@ export default function BluetoothScreen({navigation}) {
         }
     }, [state.connection, state.discovering, state.bluetoothEnabled, state.loading]);
 
+    useEffect(() => {
+        const msgUpdateFreq = `CMD+RATE?${settings.bluetooth.updateFrequency}`;
+        if (state.connection) {
+            write([msgUpdateFreq]);
+            console.log('Updated Bluetooth update frequency');
+        }
+    }, [state.connection]);
+
     return (
-        <View style={[styles.container.center, {justifyContent: 'flex-start'}]}>
+        <View style={[styles.container.center, { justifyContent: 'flex-start' }]}>
             <Button
                 style={[styles.button.primary, { backgroundColor: buttonColor }]}
                 mode={'contained'}
@@ -69,14 +71,14 @@ export default function BluetoothScreen({navigation}) {
                 {buttonText}
             </Button>
 
-            <Button
+            {/* <Button
                 style={styles.button.primary}
                 mode={'contained'}
                 icon={'devices'}
                 onPress={() => navigation.navigate('Devices')}
             >
                 Devices
-            </Button>
+            </Button> */}
 
             <DropDownPicker
                 containerStyle={{ marginVertical: 20 }}
@@ -90,7 +92,7 @@ export default function BluetoothScreen({navigation}) {
                 setItems={setItems}
                 searchable={true}
                 categorySelectable={false}
-                disabled={!state.connection}
+                // disabled={!state.connection}
                 disabledStyle={{ opacity: 0.3 }}
                 addCustomItem={true}
                 closeOnBackPressed={true}
