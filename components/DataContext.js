@@ -29,6 +29,9 @@ function dataReducer(data, action) {
     switch (action.type) {
     case 'decode': {
         const decodedMessage = decodePID(action.message);
+        if (decodedMessage === null) {
+            return data;
+        }
 
         if (myPIDs.includes(decodedMessage.PID)) {
             return objectMap(data, (val, key) => {
