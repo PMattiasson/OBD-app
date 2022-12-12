@@ -43,7 +43,8 @@ export default function SettingsScreen({ navigation }) {
     function BluetoothUpdateFrequencyModal() {
         return (
             <>
-                <Text>Upload frequency</Text>
+                <Text variant="titleLarge">Upload frequency</Text>
+                <Text>Requires reconnect</Text>
                 <RadioButton.Group
                     onValueChange={(value) => {
                         hideModal();
@@ -90,9 +91,9 @@ export default function SettingsScreen({ navigation }) {
             <SettingsModal />
             <ScrollView style={styles.container.base}>
                 <List.Section>
-                    <List.Subheader>Bluetooth</List.Subheader>
+                    <List.Subheader>OBD-II adapter</List.Subheader>
                     <List.Item
-                        title="Device"
+                        title="Bluetooth device"
                         description={settings.bluetooth.deviceName ?? 'Not defined'}
                         left={(props) => <List.Icon {...props} icon="devices" />}
                         onPress={() => navigation.navigate('Devices')}
