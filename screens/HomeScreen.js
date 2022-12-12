@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { Text, Button, Switch, Card, Avatar } from 'react-native-paper';
 import { styles } from '../styles/styles';
 import Speedometer from '../components/Speedometer';
-import { useData } from '../components/DataContext';
+import { useData } from '../context/DataContext';
 import { useSettings } from '../context/SettingsContext';
 
 export default function DataScreen() {

@@ -1,7 +1,7 @@
 /* eslint-disable react-native/no-raw-text */
 import { useState, useEffect } from 'react';
 import { View, ScrollView } from 'react-native';
-import useBluetooth from '../components/useBluetooth';
+import useBluetooth from '../hooks/useBluetooth';
 import { Button, List, Card } from 'react-native-paper';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { styles } from '../styles/styles';

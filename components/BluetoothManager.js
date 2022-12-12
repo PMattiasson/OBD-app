@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { PermissionsAndroid, Platform } from 'react-native';
 import RNBluetoothClassic from 'react-native-bluetooth-classic';
-import useBluetooth from './useBluetooth';
+import useBluetooth from '../hooks/useBluetooth';
 import { useBluetoothState } from '../context/BluetoothContext';
 import { useSettings } from '../context/SettingsContext';
 

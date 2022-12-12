@@ -2,8 +2,8 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { PermissionsAndroid, Platform } from 'react-native';
 import base64 from 'react-native-base64';
 import { BleManager } from 'react-native-ble-plx';
-import { useDataDispatch } from './DataContext';
-import { decodePID } from './Decoder';
+import { useDataDispatch } from '../context/DataContext';
+import { decodePID } from '../utils/Decoder';
 
 const BLEManager = new BleManager();
 

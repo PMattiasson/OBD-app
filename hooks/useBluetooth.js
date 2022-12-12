@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import RNBluetoothClassic from 'react-native-bluetooth-classic';
-import { useDataDispatch } from './DataContext';
+import { useDataDispatch } from '../context/DataContext';
 import { useBluetoothState } from '../context/BluetoothContext';
 
 export default function useBluetooth() {

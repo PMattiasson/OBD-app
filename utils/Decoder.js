@@ -1,4 +1,4 @@
-import responsePIDs from './PID-database';
+import responsePIDs from '../constants/PID-database';
 
 export function decodePID(hexString) {
     const messageResponse = {

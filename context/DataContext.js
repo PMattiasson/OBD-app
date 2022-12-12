@@ -1,5 +1,5 @@
 import { createContext, useContext, useReducer } from 'react';
-import { decodePID } from './Decoder';
+import { decodePID } from '../utils/Decoder';
 import objectMap from '../utils/objectMap';
 
 export const DataContext = createContext(null);

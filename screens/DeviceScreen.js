@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { ScrollView, View } from 'react-native';
 import { Button, Divider, List } from 'react-native-paper';
-import useBluetooth from '../components/useBluetooth';
+import useBluetooth from '../hooks/useBluetooth';
 import { styles } from '../styles/styles';
 import { useBluetoothState } from '../context/BluetoothContext';
 import { useSettingsDispatch } from '../context/SettingsContext';

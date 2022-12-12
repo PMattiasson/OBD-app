@@ -4,7 +4,7 @@ import { Text, Button, Switch, Card, Snackbar, List } from 'react-native-paper';
 import { styles } from '../styles/styles';
 import { theme } from '../styles/theme';
 import DropDownPicker from 'react-native-dropdown-picker';
-import useBLE from '../components/useBLE';
+import useBLE from '../hooks/useBLE';
 
 LogBox.ignoreLogs(['new NativeEventEmitter']); // Ignore log notification by message
 LogBox.ignoreAllLogs(); //Ignore all log notifications
