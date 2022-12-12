@@ -74,7 +74,7 @@ export default function BluetoothScreen({ navigation }) {
                 mode={'contained'}
                 icon={buttonIcon}
                 onPress={toggleConnection}
-                disabled={!state.bluetoothEnabled}
+                disabled={!state.bluetoothEnabled || !state.device}
                 loading={state.loading}
             >
                 {buttonText}
