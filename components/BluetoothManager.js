@@ -67,9 +67,9 @@ async function requestPermissions() {
             return isPermissionGranted === PermissionsAndroid.RESULTS.GRANTED;
         } else {
             const granted = await PermissionsAndroid.requestMultiple([
-                PermissionsAndroid.PERMISSIONS.ANDROID.BLUETOOTH_SCAN,
-                PermissionsAndroid.PERMISSIONS.ANDROID.BLUETOOTH_CONNECT,
-                PermissionsAndroid.PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
+                PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
+                PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
+                PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
             ]);
 
             const isPermissionGranted = Object.values(granted).every(
