@@ -61,11 +61,11 @@ export default function BluetoothScreen({ navigation }) {
 
     useEffect(() => {
         const msgUpdateFreq = `CMD+RATE?${settings.bluetooth.updateFrequency}`;
+        const msgProtocol = `CMD+PROTOCOL?${settings.bluetooth.protocol ? '1' : '0'}`;
         if (state.connection) {
-            write([msgUpdateFreq]);
-            console.log('Updated Bluetooth update frequency');
+            write([msgUpdateFreq, msgProtocol]);
         }
-    }, [state.connection, settings.bluetooth.updateFrequency, write]);
+    }, [state.connection, settings.bluetooth.updateFrequency, settings.bluetooth.protocol, write]);
 
     return (
         <View style={[styles.container.center, { justifyContent: 'flex-start' }]}>

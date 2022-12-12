@@ -43,8 +43,7 @@ export default function SettingsScreen({ navigation }) {
     function BluetoothUpdateFrequencyModal() {
         return (
             <>
-                <Text variant="titleLarge">Upload frequency</Text>
-                <Text>Requires reconnect</Text>
+                <Text variant="titleLarge">Bluetooth update frequency</Text>
                 <RadioButton.Group
                     onValueChange={(value) => {
                         hideModal();
@@ -121,6 +120,25 @@ export default function SettingsScreen({ navigation }) {
                         onPress={() => {
                             setModal({ visible: true, type: 'UpdateFrequency' });
                         }}
+                    />
+                    <List.Item
+                        title="Protocol"
+                        description={
+                            settings.bluetooth.protocol ? 'CAN' : 'K-line' ?? 'Not defined'
+                        }
+                        left={(props) => <List.Icon {...props} icon="car-cog" />}
+                        right={(props) => (
+                            <Checkbox
+                                status={settings.bluetooth.protocol ? 'checked' : 'unchecked'}
+                            />
+                        )}
+                        onPress={() =>
+                            dispatch({
+                                type: 'TOGGLE',
+                                object: 'bluetooth',
+                                property: 'protocol',
+                            })
+                        }
                     />
 
                     <Divider />

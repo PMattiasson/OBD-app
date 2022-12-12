@@ -83,6 +83,7 @@ const defaultSettings = {
         deviceName: 'HC-05',
         autoConnect: false,
         updateFrequency: 1000,
+        protocol: true,
     },
     server: {
         apiURL: 'permattiasson.se/api',
