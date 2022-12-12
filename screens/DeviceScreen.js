@@ -1,13 +1,39 @@
 import { useEffect } from 'react';
 import { ScrollView, View } from 'react-native';
-import { Button, List } from 'react-native-paper';
+import { Button, Divider, List } from 'react-native-paper';
 import useBluetooth from '../components/useBluetooth';
 import { styles } from '../styles/styles';
 import { useBluetoothState } from '../context/BluetoothContext';
+import { useSettingsDispatch } from '../context/SettingsContext';
+import RNBluetoothClassic from 'react-native-bluetooth-classic';
 
 export default function DeviceScreen() {
-    const { toggleDiscovery, toggleConnection, setDevice } = useBluetooth();
+    const { toggleDiscovery, setDevice, updateBondedDevices } = useBluetooth();
     const { state } = useBluetoothState();
+    const settingsDispatch = useSettingsDispatch();
+
+    const pairedDevices = state.devices.filter((d) => {
+        return d.bonded === true;
+    });
+    const discoveredDevices = state.devices.filter((d) => {
+        return d.bonded === false;
+    });
+
+    async function handlePress(device) {
+        if (device.bonded === true) {
+            if (state.device !== device) setDevice(device);
+            settingsDispatch({
+                type: 'SET',
+                object: 'bluetooth',
+                property: 'deviceName',
+                value: device.name,
+            });
+        } else {
+            await RNBluetoothClassic.pairDevice(device.address);
+            await updateBondedDevices();
+            console.log('Device paired:', device.name);
+        }
+    }
 
     return (
         <View style={[styles.container.center, { justifyContent: 'flex-start' }]}>
@@ -22,28 +48,43 @@ export default function DeviceScreen() {
                 {!state.discovering ? 'Discover devices' : 'Discovering...'}
             </Button>
 
-            <List.Section title="Paired devices" style={{ width: '100%' }}>
-                <ScrollView>
-                    {state.devices.length > 0 &&
-                        state.devices.map((device, index) => (
+            <ScrollView style={{ width: '100%' }}>
+                <List.Section>
+                    <List.Subheader>Paired devices</List.Subheader>
+                    {pairedDevices.length > 0 &&
+                        pairedDevices.map((device, index) => (
                             <List.Item
                                 left={(props) => (
                                     <List.Icon
                                         {...props}
-                                        icon="check-circle"
+                                        icon="bluetooth"
                                         color={device === state.device ? 'limegreen' : undefined}
                                     />
                                 )}
                                 title={device.name}
                                 description={device.address}
                                 key={index}
-                                onPress={() => {
-                                    if (state.device !== device) setDevice(device);
-                                }}
+                                onPress={() => handlePress(device)}
                             />
                         ))}
-                </ScrollView>
-            </List.Section>
+
+                    {discoveredDevices.length > 0 && (
+                        <>
+                            <Divider />
+                            <List.Subheader>Discovered devices</List.Subheader>
+                            {discoveredDevices.map((device, index) => (
+                                <List.Item
+                                    left={(props) => <List.Icon {...props} icon="bluetooth" />}
+                                    title={device.name}
+                                    description={device.address}
+                                    key={index}
+                                    onPress={() => handlePress(device)}
+                                />
+                            ))}
+                        </>
+                    )}
+                </List.Section>
+            </ScrollView>
         </View>
     );
 }
