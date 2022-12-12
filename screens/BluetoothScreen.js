@@ -6,15 +6,17 @@ import { Button, List, Card } from 'react-native-paper';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { styles } from '../styles/styles';
 import { theme } from '../styles/theme';
+import { useBluetoothState } from '../context/BluetoothContext';
 
 export default function BluetoothScreen({navigation}) {
     const {
-        state,
         toggleConnection,
         request,
         setRequest,
         response,
     } = useBluetooth();
+
+    const { state } = useBluetoothState();
 
     // Connect button
     const [buttonIcon, setButtonIcon] = useState('bluetooth');

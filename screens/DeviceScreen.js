@@ -3,18 +3,11 @@ import { ScrollView, View } from 'react-native';
 import { Button, List } from 'react-native-paper';
 import useBluetooth from '../components/useBluetooth';
 import { styles } from '../styles/styles';
+import { useBluetoothState } from '../context/BluetoothContext';
 
 export default function DeviceScreen() {
-    const { state, updateBondedDevices, toggleDiscovery, toggleConnection, setDevice } =
-        useBluetooth();
-    //     state.devices.map((device) => {
-    //         if (device.bonded) {
-    //             pairedDevices.push(device);
-    //         } else {
-    //             discoveredDevices.push(device);
-    //         }
-    //     });
-    // }, [state.devices]);
+    const { toggleDiscovery, toggleConnection, setDevice } = useBluetooth();
+    const { state } = useBluetoothState();
 
     return (
         <View style={[styles.container.center, { justifyContent: 'flex-start' }]}>
