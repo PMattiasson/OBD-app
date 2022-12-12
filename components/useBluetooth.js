@@ -92,6 +92,9 @@ export default function useBluetooth() {
 
     async function disconnect() {
         try {
+            const msgStop = 'CMD+STOP';
+            await write([msgStop]);
+
             const disconnected = await state.device.disconnect();
             setState({ ...state, connection: !disconnected });
             console.log('Disconnected from device');

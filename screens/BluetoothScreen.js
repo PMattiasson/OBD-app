@@ -57,6 +57,12 @@ export default function BluetoothScreen({ navigation }) {
         if (settings.bluetooth.autoConnect && state.device) {
             toggleConnection();
         }
+        // return () => {
+        //     if (state.connection) {
+        //         const msgStop = 'CMD+STOP';
+        //         write([msgStop]);
+        //     }
+        // };
     }, []);
 
     useEffect(() => {
