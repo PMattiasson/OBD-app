@@ -4,17 +4,15 @@ import { Text, Button, Switch, Card, Avatar } from 'react-native-paper';
 import { styles } from '../styles/styles';
 import Speedometer from '../components/Speedometer';
 import { useData } from '../components/DataContext';
+import { useSettings } from '../context/SettingsContext';
 
 export default function DataScreen() {
     const data = useData();
-    const [togglePostData, setTogglePostData] = useState(false);
-    const onToggleSwitch = () => setTogglePostData(!togglePostData);
-
-    const apiURL = process.env.URL;
+    const settings = useSettings();
 
     useEffect(() => {
         const postData = async () => {
-            const response = await fetch(apiURL, {
+            const response = await fetch(settings.server.apiURL, {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
@@ -34,13 +32,13 @@ export default function DataScreen() {
         //         postData().then((res) => console.log('Server response: ', res));
         //     }, 5000);
         // }
-        if (togglePostData && data?.VehicleSpeed) {
+        if (settings.server.toggleUpload && data?.VehicleSpeed) {
             postData();
             // postData().then((res) => console.log('Server response: ', res));
         }
 
         // return () => clearInterval(interval);
-    }, [data.VehicleSpeed, togglePostData, apiURL]);
+    }, [data.VehicleSpeed, settings.server.toggleUpload, settings.server.apiURL]);
 
     return (
         <View style={styles.container.base}>
@@ -54,13 +52,6 @@ export default function DataScreen() {
                     subtitleStyle={styles.baseText}
                     left={(props) => <Avatar.Icon {...props} icon="engine" />}
                 />
-
-                {apiURL && (
-                    <View style={styles.item.switch}>
-                        <Text>Toggle post API</Text>
-                        <Switch value={togglePostData} onValueChange={onToggleSwitch} />
-                    </View>
-                )}
             </View>
 
             <View style={styles.container.center}>
