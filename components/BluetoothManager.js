@@ -3,10 +3,12 @@ import { PermissionsAndroid, Platform } from 'react-native';
 import RNBluetoothClassic from 'react-native-bluetooth-classic';
 import useBluetooth from './useBluetooth';
 import { useBluetoothState } from '../context/BluetoothContext';
+import { useSettings } from '../context/SettingsContext';
 
 export default function BluetoothManager() {
     const { disconnect, cancelDiscovery } = useBluetooth();
     const { state, setState } = useBluetoothState();
+    const settings = useSettings();
 
     useEffect(() => {
         // On Bluetooth Manager mount
@@ -21,7 +23,8 @@ export default function BluetoothManager() {
             }
             if (enabled) {
                 paired = await RNBluetoothClassic.getBondedDevices();
-                device = paired.find((d) => d.name === 'HC-05');
+                paired.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0));
+                device = paired.find((d) => d.name === settings.bluetooth.deviceName);
             }
 
             setState({ ...state, bluetoothEnabled: enabled, devices: paired, device: device });

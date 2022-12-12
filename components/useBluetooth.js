@@ -45,6 +45,8 @@ export default function useBluetooth() {
                 } else {
                     devices.push(...unpaired);
                 }
+                devices.sort((a, b) => b.extra.rssi - a.extra.rssi);
+                // devices.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0));
                 console.log(`Found ${unpaired.length} unpaired devices.`);
             } finally {
                 setState({ ...state, devices: devices, discovering: false });
