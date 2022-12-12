@@ -215,8 +215,10 @@ export default function useBluetooth() {
     // Handle requests
     useEffect(() => {
         // TODO handle individual insertion and removal of requests
-        write(request);
-    }, [request, write]);
+        if (state.connection) {
+            write(request);
+        }
+    }, [request, write, state.connection]);
 
     function unsubscribe() {
         connectionSubscription.current?.remove();
