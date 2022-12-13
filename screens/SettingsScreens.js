@@ -1,14 +1,16 @@
 /* eslint-disable react-native/no-raw-text */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { ScrollView, View } from 'react-native';
 import { Checkbox, Divider, List, Modal, Portal, RadioButton, Text } from 'react-native-paper';
 import { styles } from '../styles/styles';
 import { useSettings, useSettingsDispatch } from '../context/SettingsContext';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import ThemeContext from '../context/ThemeContext';
 
 export default function SettingsScreen({ navigation }) {
     const settings = useSettings();
     const dispatch = useSettingsDispatch();
+    const { toggleTheme, isThemeDark } = useContext(ThemeContext);
+
     const [isSwitchOn, setIsSwitchOn] = useState(false);
     const onToggleSwitch = () => setIsSwitchOn(!isSwitchOn);
 
@@ -210,9 +212,17 @@ export default function SettingsScreen({ navigation }) {
                         title="Dark mode"
                         left={(props) => <List.Icon {...props} icon="theme-light-dark" />}
                         right={(props) => (
-                            <Checkbox status={isSwitchOn ? 'checked' : 'unchecked'} />
+                            <Checkbox status={settings.theme.darkMode ? 'checked' : 'unchecked'} />
                         )}
-                        onPress={onToggleSwitch}
+                        onPress={() => {
+                            toggleTheme();
+                            dispatch({
+                                type: 'SET',
+                                object: 'theme',
+                                property: 'darkMode',
+                                value: !isThemeDark,
+                            });
+                        }}
                     />
                 </List.Section>
             </ScrollView>

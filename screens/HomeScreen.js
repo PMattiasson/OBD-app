@@ -42,7 +42,7 @@ export default function DataScreen() {
 
     return (
         <View style={styles.container.base}>
-            <View style={{ alignItems: 'center' }}>
+            <View style={{ alignItems: 'center', paddingTop: 20 }}>
                 <Card.Title
                     style={styles.card.home}
                     title="On-Board Diagnostics"

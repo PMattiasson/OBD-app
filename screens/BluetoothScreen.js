@@ -1,19 +1,22 @@
 /* eslint-disable react-native/no-raw-text */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { View, ScrollView } from 'react-native';
 import useBluetooth from '../hooks/useBluetooth';
-import { Button, List, Card } from 'react-native-paper';
+import { Button, List, Card, useTheme } from 'react-native-paper';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { styles } from '../styles/styles';
 import { theme } from '../styles/theme';
 import { useBluetoothState } from '../context/BluetoothContext';
 import { useSettings } from '../context/SettingsContext';
+import ThemeContext from '../context/ThemeContext';
 
 export default function BluetoothScreen({ navigation }) {
     const { toggleConnection, request, setRequest, response, write } = useBluetooth();
 
     const { state } = useBluetoothState();
     const settings = useSettings();
+    const theme = useTheme();
+    const { isThemeDark } = useContext(ThemeContext);
 
     // Connect button
     const [buttonIcon, setButtonIcon] = useState('bluetooth');
@@ -50,7 +53,13 @@ export default function BluetoothScreen({ navigation }) {
             setButtonIcon('bluetooth-off');
             setButtonColor('red');
         }
-    }, [state.connection, state.discovering, state.bluetoothEnabled, state.loading]);
+    }, [
+        state.connection,
+        state.discovering,
+        state.bluetoothEnabled,
+        state.loading,
+        theme.colors.primary,
+    ]);
 
     // Auto-connect
     useEffect(() => {
@@ -108,6 +117,7 @@ export default function BluetoothScreen({ navigation }) {
                 stickyHeader={true}
                 multiple={true}
                 maxHeight={300}
+                theme={isThemeDark ? 'DARK' : 'LIGHT'}
             />
 
             <View style={styles.item.row}>

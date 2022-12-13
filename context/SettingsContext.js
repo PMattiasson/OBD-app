@@ -1,5 +1,6 @@
 import { createContext, useContext, useReducer, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ThemeContext from './ThemeContext';
 
 const SettingsContext = createContext(null);
 
@@ -7,12 +8,14 @@ const SettingsDispatchContext = createContext(null);
 
 export function SettingsProvider({ children }) {
     const [settings, dispatch] = useReducer(settingsReducer, {});
+    const { toggleTheme } = useContext(ThemeContext);
 
     // Load inital state
     useEffect(() => {
         (async () => {
-            const settings = await getSettings();
-            dispatch({ type: 'ADD', settings });
+            const initSettings = await getSettings();
+            dispatch({ type: 'ADD', settings: initSettings });
+            initSettings.theme.darkMode && toggleTheme();
         })();
     }, []);
 

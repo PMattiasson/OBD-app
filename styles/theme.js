@@ -1,28 +1,33 @@
-import { MD3LightTheme as PaperDefaultTheme } from 'react-native-paper';
-import { DefaultTheme as NavigationDefaultTheme } from '@react-navigation/native';
+import { MD3LightTheme, MD3DarkTheme, adaptNavigationTheme } from 'react-native-paper';
+import {
+    DefaultTheme as NavigationDefaultTheme,
+    DarkTheme as NavigationDarkTheme,
+} from '@react-navigation/native';
 
-// export const theme = {
-//     ...PaperDefaultTheme,
-//     roundness: 2,
-//     version: 3,
-//     colors: {
-//         ...DefaultTheme.colors,
-//         primary: '#3498db',
-//         secondary: '#f1c40f',
-//         tertiary: '#a1b2c3',
-//         tabs: ['#006d6a','#1f65ff'],
-//     },
-// };
+const { LightTheme, DarkTheme } = adaptNavigationTheme({
+    light: NavigationDefaultTheme,
+    dark: NavigationDarkTheme,
+});
 
-export const theme = {
-    ...NavigationDefaultTheme,
-    ...PaperDefaultTheme,
+export const CombinedDefaultTheme = {
+    ...MD3LightTheme,
+    ...LightTheme,
     colors: {
-        ...NavigationDefaultTheme.colors,
-        ...PaperDefaultTheme.colors,
+        ...MD3LightTheme.colors,
+        ...LightTheme.colors,
         primary: '#3498db',
         secondary: '#f1c40f',
         tertiary: '#a1b2c3',
-        tabs: ['#006d6a','#1f65ff'],
-    }
+    },
+};
+export const CombinedDarkTheme = {
+    ...MD3DarkTheme,
+    ...DarkTheme,
+    colors: {
+        ...MD3DarkTheme.colors,
+        ...DarkTheme.colors,
+        primary: '#3498db',
+        secondary: '#f1c40f',
+        tertiary: '#a1b2c3',
+    },
 };
