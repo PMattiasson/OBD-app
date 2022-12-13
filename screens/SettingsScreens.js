@@ -31,7 +31,7 @@ export default function SettingsScreen({ navigation }) {
                     contentContainerStyle={containerStyle}
                     style={{ padding: 20 }}
                 >
-                    {modal.type && <SelectModal />}
+                    {modal.type && SelectModal && <SelectModal />}
                 </Modal>
             </Portal>
         );
