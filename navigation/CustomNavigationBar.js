@@ -7,11 +7,17 @@ export default function CustomNavigationBar({ route, navigation, back }) {
     const openMenu = () => setVisible(true);
     const closeMenu = () => setVisible(false);
 
+    const title = getHeaderTitle(route);
+
     return (
-        <Appbar.Header mode="center-aligned" elevated={true} statusBarHeight={0}>
+        <Appbar.Header
+            style={{ elevation: 10 }}
+            // mode="center-aligned"
+            // statusBarHeight={0}
+        >
             {back ? <Appbar.BackAction onPress={navigation.goBack} /> : null}
-            <Appbar.Content title={getHeaderTitle(route)} />
-            {getHeaderTitle(route) !== 'Settings' && (
+            <Appbar.Content title={title} />
+            {title !== 'Settings' && title !== 'Devices' && (
                 <Menu
                     visible={visible}
                     onDismiss={closeMenu}
