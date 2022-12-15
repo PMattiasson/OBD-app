@@ -1,7 +1,18 @@
 /* eslint-disable react-native/no-raw-text */
-import { useState, useEffect, useContext } from 'react';
-import { ScrollView, View } from 'react-native';
-import { Checkbox, Divider, List, Modal, Portal, RadioButton, Text } from 'react-native-paper';
+import { useState, useContext } from 'react';
+import { ScrollView } from 'react-native';
+import {
+    Checkbox,
+    Divider,
+    HelperText,
+    List,
+    Modal,
+    Portal,
+    RadioButton,
+    Text,
+    TextInput,
+    useTheme,
+} from 'react-native-paper';
 import { styles } from '../styles/styles';
 import { useSettings, useSettingsDispatch } from '../context/SettingsContext';
 import ThemeContext from '../context/ThemeContext';
@@ -10,42 +21,38 @@ export default function SettingsScreen({ navigation }) {
     const settings = useSettings();
     const dispatch = useSettingsDispatch();
     const { toggleTheme, isThemeDark } = useContext(ThemeContext);
-
-    const [isSwitchOn, setIsSwitchOn] = useState(false);
-    const onToggleSwitch = () => setIsSwitchOn(!isSwitchOn);
+    const theme = useTheme();
 
     const [modal, setModal] = useState({ visible: false, type: null });
     const showModal = () => setModal({ ...modal, visible: true });
     const hideModal = () => setModal({ ...modal, visible: false });
-    const containerStyle = { backgroundColor: 'white', padding: 20, borderRadius: 5 };
-
-    const [value, setValue] = useState(1);
-
-    function SettingsModal() {
-        const SelectModal = settingModals[modal.type];
-        return (
-            <Portal>
-                <Modal
-                    visible={modal.visible}
-                    onDismiss={hideModal}
-                    contentContainerStyle={containerStyle}
-                    style={{ padding: 20 }}
-                >
-                    {modal.type && SelectModal && <SelectModal />}
-                </Modal>
-            </Portal>
-        );
-    }
-
-    const settingModals = {
-        UpdateFrequency: BluetoothUpdateFrequencyModal,
-        PacketSize: ModalContent2,
+    const containerStyle = {
+        backgroundColor: theme.colors.background,
+        padding: 20,
+        borderRadius: 5,
     };
 
-    function BluetoothUpdateFrequencyModal() {
+    function ModalReference() {
+        const Modals = {
+            ModalUpdateFrequency,
+            ModalAddress,
+            ModalPacketSize,
+        };
+
+        let SelectedModal = Modals[modal.type];
+
+        return modal.type && SelectedModal && <SelectedModal />;
+    }
+
+    function ModalUpdateFrequency() {
         return (
-            <>
-                <Text variant="titleLarge">Bluetooth update frequency</Text>
+            <Modal
+                visible={modal.visible}
+                onDismiss={hideModal}
+                contentContainerStyle={containerStyle}
+                style={{ padding: 20 }}
+            >
+                <Text variant="titleMedium">Bluetooth update frequency</Text>
                 <RadioButton.Group
                     onValueChange={(value) => {
                         hideModal();
@@ -63,33 +70,100 @@ export default function SettingsScreen({ navigation }) {
                     <RadioButton.Item label="10 Hz" value={100} />
                     <RadioButton.Item label="20 Hz" value={50} />
                 </RadioButton.Group>
-            </>
+            </Modal>
         );
     }
 
-    function ModalContent2() {
+    function ModalAddress() {
+        const [text, setText] = useState(settings.server.apiURL);
+
+        function handleDismiss() {
+            hideModal();
+            let value = undefined;
+            if (text?.length > 0) {
+                value = text;
+            }
+            dispatch({
+                type: 'SET',
+                object: 'server',
+                property: 'apiURL',
+                value: value,
+            });
+        }
+
+        function validURL(str) {
+            var pattern = new RegExp(
+                '^(https?:\\/\\/)?' + // protocol
+                    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+                    '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+                    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+                    '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+                    '(\\#[-a-z\\d_]*)?$',
+                'i',
+            ); // fragment locator
+            return !!pattern.test(str);
+        }
+
         return (
-            <>
-                <Text>Packet size</Text>
+            <Modal
+                visible={modal.visible}
+                onDismiss={hideModal}
+                contentContainerStyle={containerStyle}
+                style={{ padding: 20 }}
+            >
+                <Text variant="titleMedium">Upload data to API address</Text>
+                <TextInput
+                    style={{ marginTop: 15 }}
+                    mode={'outlined'}
+                    label={'URL'}
+                    value={text}
+                    onChangeText={(text) => setText(text)}
+                    onSubmitEditing={handleDismiss}
+                    onBlur={hideModal}
+                />
+                <HelperText type="error" visible={!validURL(text)}>
+                    URL is invalid!
+                </HelperText>
+            </Modal>
+        );
+    }
+
+    function ModalPacketSize() {
+        return (
+            <Modal
+                visible={modal.visible}
+                onDismiss={hideModal}
+                contentContainerStyle={containerStyle}
+                style={{ padding: 20 }}
+            >
+                <Text variant="titleMedium">Packet size</Text>
                 <RadioButton.Group
                     onValueChange={(value) => {
                         hideModal();
-                        setValue(value);
+                        dispatch({
+                            type: 'SET',
+                            object: 'server',
+                            property: 'packetSize',
+                            value: value,
+                        });
                     }}
-                    value={value}
+                    value={settings.server.packetSize}
                 >
                     <RadioButton.Item label="1" value={1} />
                     <RadioButton.Item label="2" value={2} />
                     <RadioButton.Item label="5" value={5} />
                     <RadioButton.Item label="10" value={10} />
                 </RadioButton.Group>
-            </>
+            </Modal>
         );
     }
 
     return (
         <>
-            <SettingsModal />
+            <Portal>
+                <ModalReference />
+            </Portal>
+
             <ScrollView style={styles.container.base}>
                 <List.Section>
                     <List.Subheader>OBD-II adapter</List.Subheader>
@@ -120,7 +194,7 @@ export default function SettingsScreen({ navigation }) {
                         description={settings.bluetooth.updateFrequency ?? 'Not defined'}
                         left={(props) => <List.Icon {...props} icon="update" />}
                         onPress={() => {
-                            setModal({ visible: true, type: 'UpdateFrequency' });
+                            setModal({ visible: true, type: 'ModalUpdateFrequency' });
                         }}
                     />
                     <List.Item
@@ -150,6 +224,9 @@ export default function SettingsScreen({ navigation }) {
                         title="API address"
                         description={settings.server.apiURL ?? 'Not defined'}
                         left={(props) => <List.Icon {...props} icon="link" />}
+                        onPress={() => {
+                            setModal({ visible: true, type: 'ModalAddress' });
+                        }}
                     />
                     <List.Item
                         title="Toggle upload"
@@ -169,40 +246,46 @@ export default function SettingsScreen({ navigation }) {
                     />
                     <List.Item
                         title="Upload frequency"
-                        description={value ?? 'Not defined'}
+                        description={settings.server.uploadFrequency ?? 'Not defined'}
                         left={(props) => <List.Icon {...props} icon="update" />}
                         onPress={() => {
-                            setModal({ visible: true, type: 'UploadFrequency' });
+                            setModal({ visible: true, type: 'ModalUploadFrequency' });
                         }}
                     />
                     <List.Item
                         title="Packet size"
-                        description={'Not defined'}
+                        description={settings.server.packetSize ?? 'Not defined'}
                         left={(props) => <List.Icon {...props} icon="package-variant-closed" />}
                         onPress={() => {
-                            setModal({ visible: true, type: 'PacketSize' });
+                            setModal({ visible: true, type: 'ModalPacketSize' });
                         }}
                     />
 
                     <Divider />
 
-                    <List.Subheader>Speedometer</List.Subheader>
+                    {/* <List.Subheader>Speedometer</List.Subheader>
                     <List.Item
                         title="Variant style"
                         description={'Not defined'}
                         left={(props) => <List.Icon {...props} icon="speedometer" />}
-                    />
+                    /> */}
 
                     <Divider />
 
                     <List.Subheader>Maps</List.Subheader>
                     <List.Item
                         title="Toggle GPS"
-                        left={(props) => <List.Icon {...props} icon="map-outline" />}
+                        left={(props) => <List.Icon {...props} icon="crosshairs-gps" />}
                         right={(props) => (
-                            <Checkbox status={isSwitchOn ? 'checked' : 'unchecked'} />
+                            <Checkbox status={settings.maps.toggleGPS ? 'checked' : 'unchecked'} />
                         )}
-                        onPress={onToggleSwitch}
+                        onPress={() =>
+                            dispatch({
+                                type: 'TOGGLE',
+                                object: 'maps',
+                                property: 'toggleGPS',
+                            })
+                        }
                     />
 
                     <Divider />

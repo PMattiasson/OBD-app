@@ -83,18 +83,21 @@ async function getSettings() {
 
 const defaultSettings = {
     bluetooth: {
-        deviceName: 'HC-05',
+        deviceName: undefined,
         autoConnect: false,
         updateFrequency: 1000,
         protocol: true,
     },
     server: {
-        apiURL: 'permattiasson.se/api',
+        apiURL: undefined,
         toggleUpload: false,
         uploadFrequency: 1000,
         packetSize: 1,
     },
     theme: {
         darkMode: false,
+    },
+    maps: {
+        toggleGPS: false,
     },
 };
