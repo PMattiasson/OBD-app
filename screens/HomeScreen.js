@@ -5,6 +5,7 @@ import { styles } from '../styles/styles';
 import Speedometer from '../components/Speedometer';
 import { useData } from '../context/DataContext';
 import { useSettings } from '../context/SettingsContext';
+import WebSocketManager from '../components/WebSocketManager';
 
 export default function DataScreen() {
     const data = useData();
@@ -52,6 +53,8 @@ export default function DataScreen() {
                     subtitleStyle={styles.baseText}
                     left={(props) => <Avatar.Icon {...props} icon="engine" />}
                 />
+
+                <WebSocketManager />
             </View>
 
             <View style={styles.container.center}>
