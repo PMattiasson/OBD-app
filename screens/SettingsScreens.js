@@ -93,7 +93,7 @@ export default function SettingsScreen({ navigation }) {
 
         function validURL(str) {
             var pattern = new RegExp(
-                '^(https?:\\/\\/)?' + // protocol
+                '^(ws?:\\/\\/)?' + // protocol
                     '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
                     '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
                     '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
@@ -111,11 +111,11 @@ export default function SettingsScreen({ navigation }) {
                 contentContainerStyle={containerStyle}
                 style={{ padding: 20 }}
             >
-                <Text variant="titleMedium">Upload data to API address</Text>
+                <Text variant="titleMedium">Address to upload data to </Text>
                 <TextInput
                     style={{ marginTop: 15 }}
                     mode={'outlined'}
-                    label={'URL'}
+                    label={'WebSocket URL'}
                     value={text}
                     onChangeText={(text) => setText(text)}
                     onSubmitEditing={handleDismiss}
@@ -221,7 +221,7 @@ export default function SettingsScreen({ navigation }) {
 
                     <List.Subheader>Cloud Server</List.Subheader>
                     <List.Item
-                        title="API address"
+                        title="WebSocket address"
                         description={settings.server.apiURL ?? 'Not defined'}
                         left={(props) => <List.Icon {...props} icon="link" />}
                         onPress={() => {
