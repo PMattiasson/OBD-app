@@ -6,6 +6,7 @@ import Speedometer from '../components/Speedometer';
 import { useData } from '../context/DataContext';
 import { useSettings } from '../context/SettingsContext';
 import WebSocketManager from '../components/WebSocketManager';
+import OBDSimulator from '../components/OBDSimulator';
 
 export default function DataScreen() {
     const data = useData();
@@ -55,6 +56,7 @@ export default function DataScreen() {
                 />
 
                 <WebSocketManager />
+                <OBDSimulator />
             </View>
 
             <View style={styles.container.center}>
