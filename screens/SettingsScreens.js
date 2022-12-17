@@ -36,7 +36,7 @@ export default function SettingsScreen({ navigation }) {
         const Modals = {
             ModalUpdateFrequency,
             ModalAddress,
-            ModalPacketSize,
+            ModalUploadFrequency,
         };
 
         let SelectedModal = Modals[modal.type];
@@ -77,7 +77,7 @@ export default function SettingsScreen({ navigation }) {
     function ModalAddress() {
         const [text, setText] = useState(settings.server.apiURL);
 
-        function handleDismiss() {
+        function handleSubmit() {
             hideModal();
             let value = undefined;
             if (text?.length > 0) {
@@ -118,7 +118,7 @@ export default function SettingsScreen({ navigation }) {
                     label={'WebSocket URL'}
                     value={text}
                     onChangeText={(text) => setText(text)}
-                    onSubmitEditing={handleDismiss}
+                    onSubmitEditing={handleSubmit}
                     onBlur={hideModal}
                 />
                 <HelperText type="error" visible={!validURL(text)}>
@@ -128,7 +128,7 @@ export default function SettingsScreen({ navigation }) {
         );
     }
 
-    function ModalPacketSize() {
+    function ModalUploadFrequency() {
         return (
             <Modal
                 visible={modal.visible}
@@ -136,23 +136,23 @@ export default function SettingsScreen({ navigation }) {
                 contentContainerStyle={containerStyle}
                 style={{ padding: 20 }}
             >
-                <Text variant="titleMedium">Packet size</Text>
+                <Text variant="titleMedium">Server upload frequency interval</Text>
                 <RadioButton.Group
                     onValueChange={(value) => {
                         hideModal();
                         dispatch({
                             type: 'SET',
                             object: 'server',
-                            property: 'packetSize',
+                            property: 'uploadFrequency',
                             value: value,
                         });
                     }}
-                    value={settings.server.packetSize}
+                    value={settings.server.uploadFrequency}
                 >
-                    <RadioButton.Item label="1" value={1} />
-                    <RadioButton.Item label="2" value={2} />
-                    <RadioButton.Item label="5" value={5} />
-                    <RadioButton.Item label="10" value={10} />
+                    <RadioButton.Item label="1000 ms" value={1000} />
+                    <RadioButton.Item label="500 ms" value={500} />
+                    <RadioButton.Item label="200 ms" value={200} />
+                    <RadioButton.Item label="100 ms" value={100} />
                 </RadioButton.Group>
             </Modal>
         );
@@ -191,7 +191,11 @@ export default function SettingsScreen({ navigation }) {
                     />
                     <List.Item
                         title="Update frequency"
-                        description={settings.bluetooth.updateFrequency ?? 'Not defined'}
+                        description={
+                            settings.bluetooth.updateFrequency
+                                ? `${settings.bluetooth.updateFrequency} ms`
+                                : 'Not defined'
+                        }
                         left={(props) => <List.Icon {...props} icon="update" />}
                         onPress={() => {
                             setModal({ visible: true, type: 'ModalUpdateFrequency' });
@@ -236,30 +240,36 @@ export default function SettingsScreen({ navigation }) {
                                 status={settings.server.toggleUpload ? 'checked' : 'unchecked'}
                             />
                         )}
-                        onPress={() =>
-                            dispatch({
-                                type: 'TOGGLE',
-                                object: 'server',
-                                property: 'toggleUpload',
-                            })
-                        }
+                        onPress={() => {
+                            if (settings.server.apiURL) {
+                                dispatch({
+                                    type: 'TOGGLE',
+                                    object: 'server',
+                                    property: 'toggleUpload',
+                                });
+                            }
+                        }}
                     />
                     <List.Item
                         title="Upload frequency"
-                        description={settings.server.uploadFrequency ?? 'Not defined'}
+                        description={
+                            settings.server.uploadFrequency
+                                ? `${settings.server.uploadFrequency} ms`
+                                : 'Not defined'
+                        }
                         left={(props) => <List.Icon {...props} icon="update" />}
                         onPress={() => {
                             setModal({ visible: true, type: 'ModalUploadFrequency' });
                         }}
                     />
-                    <List.Item
+                    {/* <List.Item
                         title="Packet size"
                         description={settings.server.packetSize ?? 'Not defined'}
                         left={(props) => <List.Icon {...props} icon="package-variant-closed" />}
                         onPress={() => {
                             setModal({ visible: true, type: 'ModalPacketSize' });
                         }}
-                    />
+                    /> */}
 
                     <Divider />
 
