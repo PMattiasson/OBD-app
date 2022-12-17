@@ -15,7 +15,10 @@ const Ticks = memo(function Ticks({
     height,
     radius,
     center,
+    theme,
 }) {
+    const color = theme.colors.onBackground;
+
     function MajorTicks() {
         const angleArray = range(
             angleOffset,
@@ -30,9 +33,9 @@ const Ticks = memo(function Ticks({
             const posDigit = polarToCartesian(radius - 40, angle, center, center, -180);
 
             return (
-                <G key={index}>
+                <G key={angle.toString()}>
                     <Line
-                        stroke="black"
+                        stroke={color}
                         strokeWidth={6}
                         x1={start.x}
                         y1={start.y}
@@ -43,7 +46,7 @@ const Ticks = memo(function Ticks({
                         textAnchor="middle"
                         fontSize="19"
                         fontWeight="bold"
-                        fill="black"
+                        fill={color}
                         alignmentBaseline="central"
                         x={posDigit.x}
                         y={posDigit.y}
@@ -64,7 +67,7 @@ const Ticks = memo(function Ticks({
 
             return (
                 <Line
-                    stroke="black"
+                    stroke={color}
                     strokeWidth={strokeWidth}
                     key={index}
                     x1={start.x}

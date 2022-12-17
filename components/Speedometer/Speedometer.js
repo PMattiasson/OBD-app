@@ -4,19 +4,23 @@ import { View, Text } from 'react-native';
 import SpeedIndicator from './Indicator';
 import Ticks from './Ticks';
 import { windowWidth as width } from '../../styles/styles';
+import { useTheme } from 'react-native-paper';
 
-export default function Speedometer({ speedKPH, label, unit }) {
-    // General component variables
-    const height = width / 2 + width * Math.sin((6 * Math.PI) / 180);
-    const radius = (width * 0.9) / 2;
-    const center = width / 2;
+// General component variables
+const height = width / 2 + width * Math.sin((6 * Math.PI) / 180);
+const radius = (width * 0.9) / 2;
+const center = width / 2;
 
-    // Tick variables
-    const maxSpeed = 260;
-    const angleRange = 200;
-    const angleOffset = -10;
+// Tick variables
+const maxSpeed = 260;
+const angleRange = 200;
+const angleOffset = -10;
 
+export default function Speedometer({ speedKPH }) {
+    const theme = useTheme();
     const speedInDegrees = (speedKPH * angleRange) / maxSpeed;
+    const styleValue = { fontSize: 20, fontWeight: 'bold', color: theme.colors.onBackground };
+    const containerValue = { flex: 1, alignItems: 'center', justifyContent: 'center' };
 
     return (
         <View style={{ width: width, height: height }}>
@@ -28,6 +32,7 @@ export default function Speedometer({ speedKPH, label, unit }) {
                 height={height}
                 radius={radius}
                 center={center}
+                theme={theme}
             />
             <SpeedIndicator
                 angle={speedInDegrees}
@@ -36,14 +41,8 @@ export default function Speedometer({ speedKPH, label, unit }) {
                 radius={radius}
                 center={center}
             />
-            <View
-                style={{
-                    flex: 1,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                }}
-            >
-                <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{speedKPH ? speedKPH : 0}</Text>
+            <View style={containerValue}>
+                <Text style={styleValue}>{speedKPH ? speedKPH : 0}</Text>
             </View>
         </View>
     );

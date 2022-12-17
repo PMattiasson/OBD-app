@@ -24,7 +24,7 @@ export default function SettingsScreen({ navigation }) {
     const theme = useTheme();
 
     const [modal, setModal] = useState({ visible: false, type: null });
-    const showModal = () => setModal({ ...modal, visible: true });
+    // const showModal = () => setModal({ ...modal, visible: true });
     const hideModal = () => setModal({ ...modal, visible: false });
     const containerStyle = {
         backgroundColor: theme.colors.background,
@@ -178,7 +178,7 @@ export default function SettingsScreen({ navigation }) {
                     <List.Item
                         title="Auto-connect"
                         left={(props) => <List.Icon {...props} icon="bluetooth-connect" />}
-                        right={(props) => (
+                        right={() => (
                             <Checkbox
                                 status={settings.bluetooth.autoConnect ? 'checked' : 'unchecked'}
                             />
@@ -209,7 +209,7 @@ export default function SettingsScreen({ navigation }) {
                             settings.bluetooth.protocol ? 'CAN' : 'K-line' ?? 'Not defined'
                         }
                         left={(props) => <List.Icon {...props} icon="car-cog" />}
-                        right={(props) => (
+                        right={() => (
                             <Checkbox
                                 status={settings.bluetooth.protocol ? 'checked' : 'unchecked'}
                             />
@@ -237,7 +237,7 @@ export default function SettingsScreen({ navigation }) {
                     <List.Item
                         title="Toggle upload"
                         left={(props) => <List.Icon {...props} icon="cloud-upload-outline" />}
-                        right={(props) => (
+                        right={() => (
                             <Checkbox
                                 status={settings.server.toggleUpload ? 'checked' : 'unchecked'}
                             />
@@ -290,7 +290,7 @@ export default function SettingsScreen({ navigation }) {
                     <List.Item
                         title="Toggle GPS"
                         left={(props) => <List.Icon {...props} icon="crosshairs-gps" />}
-                        right={(props) => (
+                        right={() => (
                             <Checkbox status={settings.maps.toggleGPS ? 'checked' : 'unchecked'} />
                         )}
                         onPress={() =>
@@ -308,7 +308,7 @@ export default function SettingsScreen({ navigation }) {
                     <List.Item
                         title="Dark mode"
                         left={(props) => <List.Icon {...props} icon="theme-light-dark" />}
-                        right={(props) => (
+                        right={() => (
                             <Checkbox status={settings.theme.darkMode ? 'checked' : 'unchecked'} />
                         )}
                         onPress={() => {
@@ -329,7 +329,7 @@ export default function SettingsScreen({ navigation }) {
                         title="OBD-II adapter simulation"
                         description="Adds a slider to home screen"
                         left={(props) => <List.Icon {...props} icon="bug" />}
-                        right={(props) => (
+                        right={() => (
                             <Checkbox
                                 status={settings.debug.toggleSimulation ? 'checked' : 'unchecked'}
                             />

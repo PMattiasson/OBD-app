@@ -1,6 +1,6 @@
 // https://snack.expo.dev/@macfanatic/react-native-paper-snackbar-provider
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Snackbar, Text } from 'react-native-paper';
 
 import { useToast } from '../context/ToastContext';
@@ -50,6 +50,7 @@ const SnackBar = () => {
                     action={{
                         label: 'Ok',
                         onPress: closeMe,
+                        textColor: 'white',
                     }}
                 >
                     <Text style={{ color: 'white' }}>{!!toast && toast.message}</Text>

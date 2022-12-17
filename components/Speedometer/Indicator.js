@@ -1,6 +1,6 @@
-import { useEffect } from 'react';
+import { memo } from 'react';
 import { View } from 'react-native';
-import { Svg, G, Line, Polygon } from 'react-native-svg';
+import { Svg, Line } from 'react-native-svg';
 import Animated, {
     useSharedValue,
     useAnimatedStyle,
@@ -21,26 +21,30 @@ export default function SpeedIndicator({ angle, width, radius, center, angleOffs
         return { transform: [{ rotate: `${rotation}deg` }] };
     });
 
-    useEffect(() => {
-        animationRotation.value = withSpring(angle, animationOptions);
-    }, [angle]);
-
-    const { x, y } = polarToCartesian(radius, angleOffset, center, center, -180);
+    animationRotation.value = withSpring(angle, animationOptions);
 
     return (
         <AnimatedView style={animationStyle} position="absolute">
-            <Svg height={width} width={width}>
-                <Line
-                    x1={center}
-                    y1={center}
-                    x2={x}
-                    y2={y}
-                    origin={[center, center]}
-                    strokeWidth={10}
-                    strokeLinecap="round"
-                    stroke={'red'}
-                />
-            </Svg>
+            <Indicator width={width} radius={radius} center={center} angleOffset={angleOffset} />
         </AnimatedView>
     );
 }
+
+const Indicator = memo(function Indicator({ width, radius, center, angleOffset }) {
+    const { x, y } = polarToCartesian(radius, angleOffset, center, center, -180);
+
+    return (
+        <Svg height={width} width={width}>
+            <Line
+                x1={center}
+                y1={center}
+                x2={x}
+                y2={y}
+                origin={[center, center]}
+                strokeWidth={10}
+                strokeLinecap="round"
+                stroke={'red'}
+            />
+        </Svg>
+    );
+});

@@ -2,10 +2,9 @@
 import { useState, useEffect, useContext } from 'react';
 import { View, ScrollView } from 'react-native';
 import useBluetooth from '../hooks/useBluetooth';
-import { Button, List, Card, useTheme } from 'react-native-paper';
+import { Button, List, Card, useTheme, Text } from 'react-native-paper';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { styles } from '../styles/styles';
-import { theme } from '../styles/theme';
 import { useBluetoothState } from '../context/BluetoothContext';
 import { useSettings } from '../context/SettingsContext';
 import ThemeContext from '../context/ThemeContext';
@@ -66,14 +65,9 @@ export default function BluetoothScreen({ navigation }) {
         if (settings.bluetooth.autoConnect && state.device) {
             toggleConnection();
         }
-        // return () => {
-        //     if (state.connection) {
-        //         const msgStop = 'CMD+STOP';
-        //         write([msgStop]);
-        //     }
-        // };
     }, []);
 
+    // Send updated command variables to device on connection or settings state update
     useEffect(() => {
         const msgUpdateFreq = `CMD+RATE?${settings.bluetooth.updateFrequency}`;
         const msgProtocol = `CMD+PROTOCOL?${settings.bluetooth.protocol ? '1' : '0'}`;
@@ -123,6 +117,7 @@ export default function BluetoothScreen({ navigation }) {
             <View style={styles.item.row}>
                 <Card style={styles.card.ble}>
                     <Card.Content>
+                        <Text variant="titleLarge">Raw OBD-II frame messages</Text>
                         <List.Accordion
                             title="Sent request messages"
                             left={(props) => <List.Icon {...props} icon="send" />}
@@ -142,7 +137,9 @@ export default function BluetoothScreen({ navigation }) {
                                 />
                             )}
                         >
-                            <List.Item title={response} />
+                            {response.map((item, index) => (
+                                <List.Item title={item} key={index} />
+                            ))}
                         </List.Accordion>
                     </Card.Content>
                 </Card>

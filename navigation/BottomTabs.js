@@ -2,12 +2,17 @@ import { createMaterialBottomTabNavigator } from '@react-navigation/material-bot
 import HomeScreen from '../screens/HomeScreen';
 import BluetoothScreen from '../screens/BluetoothScreen';
 import SettingsScreen from '../screens/SettingsScreens';
+import { useTheme } from 'react-native-paper';
 
 const Tab = createMaterialBottomTabNavigator();
 
 export default function BottomTabs() {
+    const theme = useTheme();
     return (
-        <Tab.Navigator>
+        <Tab.Navigator
+            activeColor={theme.colors.primary}
+            barStyle={{ backgroundColor: theme.colors.elevation.level1 }}
+        >
             <Tab.Screen
                 name="Home"
                 component={HomeScreen}

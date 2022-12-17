@@ -80,5 +80,6 @@ async function requestPermissions() {
         }
     } catch (err) {
         console.warn(err);
+        return false;
     }
 }

@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { ScrollView, View } from 'react-native';
 import { Button, Divider, List } from 'react-native-paper';
 import useBluetooth from '../hooks/useBluetooth';
@@ -52,7 +51,7 @@ export default function DeviceScreen() {
                 <List.Section>
                     <List.Subheader>Paired devices</List.Subheader>
                     {pairedDevices.length > 0 &&
-                        pairedDevices.map((device, index) => (
+                        pairedDevices.map((device) => (
                             <List.Item
                                 left={(props) => (
                                     <List.Icon
@@ -63,7 +62,7 @@ export default function DeviceScreen() {
                                 )}
                                 title={device.name}
                                 description={device.address}
-                                key={index}
+                                key={device.address}
                                 onPress={() => handlePress(device)}
                             />
                         ))}
@@ -72,12 +71,12 @@ export default function DeviceScreen() {
                         <>
                             <Divider />
                             <List.Subheader>Discovered devices</List.Subheader>
-                            {discoveredDevices.map((device, index) => (
+                            {discoveredDevices.map((device) => (
                                 <List.Item
                                     left={(props) => <List.Icon {...props} icon="bluetooth" />}
                                     title={device.name}
                                     description={device.address}
-                                    key={index}
+                                    key={device.address}
                                     onPress={() => handlePress(device)}
                                 />
                             ))}

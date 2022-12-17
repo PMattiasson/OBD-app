@@ -12,7 +12,7 @@ export default function useBluetooth() {
     const { dispatch: toast } = useToast();
 
     const [request, setRequest] = useState([]);
-    const [response, setResponse] = useState();
+    const [response, setResponse] = useState([]);
 
     const dispatch = useDataDispatch();
 
@@ -141,8 +141,6 @@ export default function useBluetooth() {
     async function onDataReceived(event) {
         const data = event.data;
         if (data !== null) {
-            setResponse(data);
-
             const responses = data.split('\n');
             responses.map((res) => {
                 dispatch({
@@ -150,6 +148,7 @@ export default function useBluetooth() {
                     message: res,
                 });
             });
+            setResponse(responses);
         }
         // console.log('Data received:', data);
     }

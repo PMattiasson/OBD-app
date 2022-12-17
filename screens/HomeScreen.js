@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
 import { View } from 'react-native';
-import { Text, Button, Card, Avatar } from 'react-native-paper';
+import { Card, Avatar } from 'react-native-paper';
 import { styles } from '../styles/styles';
 import Speedometer from '../components/Speedometer';
 import { useData } from '../context/DataContext';
@@ -32,13 +31,14 @@ export default function DataScreen() {
 
             <View style={styles.container.center}>
                 <View style={styles.item.column}>
-                    {Object.entries(data).map(([key, val], i) => {
+                    {Object.entries(data).map(([key, val]) => {
                         {
                             return (
                                 <DataText
                                     description={val.description}
                                     value={val.value}
                                     unit={val.unit}
+                                    key={key}
                                 />
                             );
                         }
