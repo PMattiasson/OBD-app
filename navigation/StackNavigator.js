@@ -17,7 +17,7 @@ export default function StackNavigator({ theme }) {
         <NavigationContainer theme={theme}>
             <Stack.Navigator screenOptions={NavigationBarOption}>
                 <Stack.Screen name="Root" component={BottomTabs} />
-                <Stack.Screen name="Settings" component={SettingsScreen} />
+                {/* <Stack.Screen name="Settings" component={SettingsScreen} /> */}
                 <Stack.Screen name="Devices" component={DeviceScreen} />
             </Stack.Navigator>
         </NavigationContainer>
