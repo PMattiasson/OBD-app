@@ -100,4 +100,7 @@ const defaultSettings = {
     maps: {
         toggleGPS: false,
     },
+    debug: {
+        toggleSimulation: false,
+    },
 };

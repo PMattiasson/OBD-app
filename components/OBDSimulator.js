@@ -19,9 +19,10 @@ export default function OBDSimulator() {
                 onValueChange={(val) => {
                     setValue(val);
                     const valByte = Math.round(map(val, 0, 65535, 0, 255));
+                    const msgTemp = `034105${valByte.toString(16)}`;
                     const msgSpeed = `03410D${valByte.toString(16)}`;
                     const msgEngine = `04410C${val.toString(16)}`;
-                    const messages = [msgSpeed, msgEngine];
+                    const messages = [msgSpeed, msgEngine, msgTemp];
                     messages.map((msg) => {
                         dispatch({
                             type: 'decode',

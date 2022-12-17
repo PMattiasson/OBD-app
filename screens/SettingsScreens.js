@@ -317,6 +317,27 @@ export default function SettingsScreen({ navigation }) {
                             });
                         }}
                     />
+
+                    <Divider />
+
+                    <List.Subheader>Debug</List.Subheader>
+                    <List.Item
+                        title="OBD-II adapter simulation"
+                        description="Adds a slider to home screen"
+                        left={(props) => <List.Icon {...props} icon="bug" />}
+                        right={(props) => (
+                            <Checkbox
+                                status={settings.debug.toggleSimulation ? 'checked' : 'unchecked'}
+                            />
+                        )}
+                        onPress={() => {
+                            dispatch({
+                                type: 'TOGGLE',
+                                object: 'debug',
+                                property: 'toggleSimulation',
+                            });
+                        }}
+                    />
                 </List.Section>
             </ScrollView>
         </>

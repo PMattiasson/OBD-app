@@ -26,7 +26,7 @@ export default function DataScreen() {
                 />
 
                 <WebSocketManager />
-                <OBDSimulator />
+                {settings.debug.toggleSimulation && <OBDSimulator />}
             </View>
 
             <View style={styles.container.center}>
