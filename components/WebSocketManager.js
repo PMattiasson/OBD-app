@@ -62,10 +62,8 @@ export default function WebSocketManager() {
             try {
                 if (Object.keys(data).length == 0) return;
 
-                const dataSnippet = objectMap(data, (val, key) => {
-                    if (val === 'value') {
-                        return { [key]: val };
-                    }
+                const dataSnippet = objectMap(data, (val) => {
+                    return val.value;
                 });
                 const message = JSON.stringify(dataSnippet);
                 ws.current.send(message);
