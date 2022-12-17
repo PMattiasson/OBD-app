@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useSettings } from '../context/SettingsContext';
 import { useData } from '../context/DataContext';
 import useInterval from '../hooks/useInterval';
+import objectMap from '../utils/objectMap';
 
 export default function WebSocketManager() {
     const settings = useSettings();
@@ -30,10 +31,11 @@ export default function WebSocketManager() {
     useInterval(
         () => {
             try {
-                const dataSnippet = {
-                    VehicleSpeed: data.VehicleSpeed.value,
-                    EngineRPM: data.EngineRPM.value,
-                };
+                const dataSnippet = objectMap(data, (val, key) => {
+                    if (val === 'value') {
+                        return { [key]: val };
+                    }
+                });
                 const message = JSON.stringify(dataSnippet);
                 ws.current.send(message);
             } catch (e) {
