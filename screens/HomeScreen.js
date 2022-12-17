@@ -7,6 +7,7 @@ import { useData } from '../context/DataContext';
 import { useSettings } from '../context/SettingsContext';
 import WebSocketManager from '../components/WebSocketManager';
 import OBDSimulator from '../components/OBDSimulator';
+import DataText from '../components/DataText';
 
 export default function DataScreen() {
     const data = useData();
@@ -34,9 +35,11 @@ export default function DataScreen() {
                     {Object.entries(data).map(([key, val], i) => {
                         {
                             return (
-                                <Text style={styles.text.title} key={i}>
-                                    {val.description}: {val.value} {val.unit}
-                                </Text>
+                                <DataText
+                                    description={val.description}
+                                    value={val.value}
+                                    unit={val.unit}
+                                />
                             );
                         }
                     })}

@@ -44,6 +44,7 @@ export const itemStyles = StyleSheet.create({
         justifyContent: 'flex-start',
         alignItems: 'center',
         flexDirection: 'column',
+        width: '100%',
     },
     switch: {
         width: '60%',
