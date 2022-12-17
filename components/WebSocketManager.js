@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useSettings } from '../context/SettingsContext';
 import { useData } from '../context/DataContext';
 import useInterval from '../hooks/useInterval';
@@ -12,6 +12,21 @@ export default function WebSocketManager() {
     let ws = useRef(null);
     let connected = useRef(false);
 
+    const sendData = useCallback(() => {
+        try {
+            if (Object.keys(data).length == 0) return;
+
+            const dataSnippet = objectMap(data, (val) => {
+                return val.value;
+            });
+            const message = JSON.stringify(dataSnippet);
+            ws.current.send(message);
+        } catch (e) {
+            console.log('WebSocket error:', e);
+        }
+    }, [data]);
+
+    // Connection to server WebSocket
     useEffect(() => {
         try {
             if (settings.server.toggleUpload) {
@@ -57,20 +72,13 @@ export default function WebSocketManager() {
         }
     }, [settings.server.apiURL, settings.server.toggleUpload]);
 
-    useInterval(
-        () => {
-            try {
-                if (Object.keys(data).length == 0) return;
+    // Send data to server with interval
+    useInterval(sendData, settings.server.toggleUpload ? settings.server.uploadFrequency : null);
 
-                const dataSnippet = objectMap(data, (val) => {
-                    return val.value;
-                });
-                const message = JSON.stringify(dataSnippet);
-                ws.current.send(message);
-            } catch (e) {
-                console.log('WebSocket error:', e);
-            }
-        },
-        settings.server.toggleUpload ? settings.server.uploadFrequency : null,
-    );
+    // Send data to server on data update
+    useEffect(() => {
+        if (settings.server.toggleUpload && settings.server.uploadFrequency === null) {
+            sendData();
+        }
+    }, [sendData, settings.server.toggleUpload, settings.server.uploadFrequency]);
 }
