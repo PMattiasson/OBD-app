@@ -1,0 +1,13 @@
+diff --git a/node_modules/react-native-paper/src/components/RadioButton/utils.ts b/node_modules/react-native-paper/src/components/RadioButton/utils.ts
+index c7e3926..2e9a020 100644
+--- a/node_modules/react-native-paper/src/components/RadioButton/utils.ts
++++ b/node_modules/react-native-paper/src/components/RadioButton/utils.ts
+@@ -25,7 +25,7 @@ export const isChecked = ({
+   status?: 'checked' | 'unchecked';
+   contextValue?: string;
+ }) => {
+-  if (contextValue !== undefined && contextValue !== null) {
++  if (contextValue !== undefined) {
+     return contextValue === value ? 'checked' : 'unchecked';
+   } else {
+     return status;
