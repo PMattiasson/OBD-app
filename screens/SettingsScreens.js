@@ -31,6 +31,7 @@ export default function SettingsScreen({ navigation }) {
         padding: 20,
         borderRadius: 5,
     };
+    const modalStyle = { padding: 20 };
 
     function ModalReference() {
         const Modals = {
@@ -50,9 +51,9 @@ export default function SettingsScreen({ navigation }) {
                 visible={modal.visible}
                 onDismiss={hideModal}
                 contentContainerStyle={containerStyle}
-                style={{ padding: 20 }}
+                style={modalStyle}
             >
-                <Text variant="titleMedium">Bluetooth update frequency</Text>
+                <Text variant="titleMedium">Bluetooth update interval</Text>
                 <RadioButton.Group
                     onValueChange={(value) => {
                         hideModal();
@@ -65,10 +66,10 @@ export default function SettingsScreen({ navigation }) {
                     }}
                     value={settings.bluetooth.updateFrequency}
                 >
-                    <RadioButton.Item label="1 Hz" value={1000} />
-                    <RadioButton.Item label="5 Hz" value={200} />
-                    <RadioButton.Item label="10 Hz" value={100} />
-                    <RadioButton.Item label="20 Hz" value={50} />
+                    <RadioButton.Item label="1000 ms" value={1000} />
+                    <RadioButton.Item label="200 ms" value={200} />
+                    <RadioButton.Item label="100 ms" value={100} />
+                    <RadioButton.Item label="50 ms" value={50} />
                 </RadioButton.Group>
             </Modal>
         );
@@ -109,7 +110,7 @@ export default function SettingsScreen({ navigation }) {
                 visible={modal.visible}
                 onDismiss={hideModal}
                 contentContainerStyle={containerStyle}
-                style={{ padding: 20 }}
+                style={modalStyle}
             >
                 <Text variant="titleMedium">Address to upload data to </Text>
                 <TextInput
@@ -134,9 +135,9 @@ export default function SettingsScreen({ navigation }) {
                 visible={modal.visible}
                 onDismiss={hideModal}
                 contentContainerStyle={containerStyle}
-                style={{ padding: 20 }}
+                style={modalStyle}
             >
-                <Text variant="titleMedium">Server upload frequency interval</Text>
+                <Text variant="titleMedium">Server upload interval</Text>
                 <RadioButton.Group
                     onValueChange={(value) => {
                         hideModal();
@@ -149,6 +150,7 @@ export default function SettingsScreen({ navigation }) {
                     }}
                     value={settings.server.uploadFrequency}
                 >
+                    <RadioButton.Item label="On data update" value={null} />
                     <RadioButton.Item label="1000 ms" value={1000} />
                     <RadioButton.Item label="500 ms" value={500} />
                     <RadioButton.Item label="200 ms" value={200} />
@@ -190,7 +192,7 @@ export default function SettingsScreen({ navigation }) {
                         }
                     />
                     <List.Item
-                        title="Update frequency"
+                        title="Update interval"
                         description={
                             settings.bluetooth.updateFrequency
                                 ? `${settings.bluetooth.updateFrequency} ms`
@@ -251,11 +253,13 @@ export default function SettingsScreen({ navigation }) {
                         }}
                     />
                     <List.Item
-                        title="Upload frequency"
+                        title="Upload interval"
                         description={
-                            settings.server.uploadFrequency
-                                ? `${settings.server.uploadFrequency} ms`
-                                : 'Not defined'
+                            settings.server.uploadFrequency === null
+                                ? 'On data update'
+                                : settings.server.uploadFrequency
+                                    ? `${settings.server.uploadFrequency} ms`
+                                    : 'Not defined'
                         }
                         left={(props) => <List.Icon {...props} icon="update" />}
                         onPress={() => {
