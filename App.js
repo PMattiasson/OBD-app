@@ -10,6 +10,8 @@ import { CombinedDefaultTheme, CombinedDarkTheme } from './styles/theme';
 import { SettingsProvider } from './context/SettingsContext';
 import ThemeContext from './context/ThemeContext';
 import { StatusBar } from 'expo-status-bar';
+import { ToastProvider } from './context/ToastContext';
+import SnackBar from './components/Snackbar';
 
 export default function App() {
     const [isThemeDark, setIsThemeDark] = useState(false);
@@ -34,11 +36,14 @@ export default function App() {
                 <PaperProvider theme={theme}>
                     <BluetoothProvider>
                         <DataProvider>
-                            <SafeAreaProvider>
-                                <StatusBar style={isThemeDark ? 'light' : 'dark'} />
-                                <StackNavigator theme={theme} />
-                                <BluetoothManager />
-                            </SafeAreaProvider>
+                            <ToastProvider>
+                                <SafeAreaProvider>
+                                    <StatusBar style={isThemeDark ? 'light' : 'dark'} />
+                                    <StackNavigator theme={theme} />
+                                    <BluetoothManager />
+                                    <SnackBar />
+                                </SafeAreaProvider>
+                            </ToastProvider>
                         </DataProvider>
                     </BluetoothProvider>
                 </PaperProvider>

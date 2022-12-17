@@ -5,9 +5,11 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import RNBluetoothClassic from 'react-native-bluetooth-classic';
 import { useDataDispatch } from '../context/DataContext';
 import { useBluetoothState } from '../context/BluetoothContext';
+import { useToast } from '../context/ToastContext';
 
 export default function useBluetooth() {
     const { state, setState } = useBluetoothState();
+    const { dispatch: toast } = useToast();
 
     const [request, setRequest] = useState([]);
     const [response, setResponse] = useState();
@@ -47,7 +49,13 @@ export default function useBluetooth() {
                 }
                 devices.sort((a, b) => b.extra.rssi - a.extra.rssi);
                 // devices.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0));
+
                 console.log(`Found ${unpaired.length} unpaired devices.`);
+                toast({
+                    type: 'open',
+                    message: `Found ${unpaired.length} unpaired devices.`,
+                    toastType: 'success',
+                });
             } finally {
                 setState({ ...state, devices: devices, discovering: false });
             }
@@ -84,9 +92,19 @@ export default function useBluetooth() {
             readSubscription.current = state.device.onDataReceived((data) => onDataReceived(data));
 
             console.log('Successfully connected!');
+            toast({
+                type: 'open',
+                message: `Successfuly connected to ${state.device?.name}`,
+                toastType: 'success',
+            });
         } catch (error) {
-            console.error(`Connection failed: ${error.message}`);
             setState({ ...state, loading: false });
+            console.error(`Connection failed: ${error.message}`);
+            toast({
+                type: 'open',
+                message: `Could not connect to Bluetooth device ${state.device?.name}`,
+                toastType: 'error',
+            });
         }
     }
 
@@ -112,6 +130,11 @@ export default function useBluetooth() {
             unsubscribe();
             setState({ ...state, connection: false });
             console.log('Disconnected: Connection lost!');
+            toast({
+                type: 'open',
+                message: `Connection lost to ${state.device?.name}!`,
+                toastType: 'error',
+            });
         }
     }
 
