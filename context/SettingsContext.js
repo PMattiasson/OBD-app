@@ -78,6 +78,7 @@ async function getSettings() {
         return value;
     } catch (error) {
         console.log(error);
+        return defaultSettings;
     }
 }
 
