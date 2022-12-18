@@ -7,7 +7,7 @@ const SettingsContext = createContext(null);
 const SettingsDispatchContext = createContext(null);
 
 export function SettingsProvider({ children }) {
-    const [settings, dispatch] = useReducer(settingsReducer, {});
+    const [settings, dispatch] = useReducer(settingsReducer, defaultSettings);
     const { toggleTheme } = useContext(ThemeContext);
 
     // Load inital state
