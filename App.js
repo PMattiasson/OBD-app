@@ -12,6 +12,7 @@ import ThemeContext from './context/ThemeContext';
 import { StatusBar } from 'expo-status-bar';
 import { ToastProvider } from './context/ToastContext';
 import SnackBar from './components/Snackbar';
+import WebSocketManager from './components/WebSocketManager';
 
 export default function App() {
     const [isThemeDark, setIsThemeDark] = useState(false);
@@ -41,6 +42,7 @@ export default function App() {
                                     <StatusBar style={isThemeDark ? 'light' : 'dark'} />
                                     <StackNavigator theme={theme} />
                                     <BluetoothManager />
+                                    <WebSocketManager />
                                     <SnackBar />
                                 </SafeAreaProvider>
                             </ToastProvider>

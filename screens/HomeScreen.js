@@ -4,11 +4,10 @@ import { styles } from '../styles/styles';
 import Speedometer from '../components/Speedometer';
 import { useData } from '../context/DataContext';
 import { useSettings } from '../context/SettingsContext';
-import WebSocketManager from '../components/WebSocketManager';
 import OBDSimulator from '../components/OBDSimulator';
 import DataText from '../components/DataText';
 
-export default function DataScreen() {
+export default function HomeScreen() {
     const data = useData();
     const settings = useSettings();
 
@@ -25,7 +24,6 @@ export default function DataScreen() {
                     left={(props) => <Avatar.Icon {...props} icon="engine" />}
                 />
 
-                <WebSocketManager />
                 {settings.debug.toggleSimulation && <OBDSimulator />}
             </View>
 
