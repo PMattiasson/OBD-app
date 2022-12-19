@@ -6,7 +6,7 @@ import { DataProvider } from './context/DataContext';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import StackNavigator from './navigation/StackNavigator';
 import BluetoothManager from './components/BluetoothManager';
-import { CombinedDefaultTheme, CombinedDarkTheme } from './styles/theme';
+import { MyLightTheme, MyDarkTheme } from './styles/theme';
 import { SettingsProvider } from './context/SettingsContext';
 import ThemeContext from './context/ThemeContext';
 import { StatusBar } from 'expo-status-bar';
@@ -17,7 +17,7 @@ import WebSocketManager from './components/WebSocketManager';
 export default function App() {
     const [isThemeDark, setIsThemeDark] = useState(false);
 
-    let theme = isThemeDark ? CombinedDarkTheme : CombinedDefaultTheme;
+    let theme = isThemeDark ? MyDarkTheme : MyLightTheme;
 
     const toggleTheme = useCallback(() => {
         return setIsThemeDark(!isThemeDark);
