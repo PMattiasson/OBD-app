@@ -1,6 +1,7 @@
 import { createContext, useContext, useReducer, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ThemeContext from './ThemeContext';
+import merge from 'deepmerge';
 
 const SettingsContext = createContext(null);
 
@@ -72,10 +73,9 @@ function settingsReducer(settings, action) {
 async function getSettings() {
     try {
         const jsonValue = await AsyncStorage.getItem('@storage_Key');
-        let value = jsonValue != null ? JSON.parse(jsonValue) : defaultSettings;
-        value = { ...defaultSettings, ...value };
-        // console.log(value);
-        return value;
+        const storedSettings = jsonValue != null ? JSON.parse(jsonValue) : {};
+        const merged = merge(defaultSettings, storedSettings);
+        return merged;
     } catch (error) {
         console.log(error);
         return defaultSettings;
@@ -94,6 +94,8 @@ const defaultSettings = {
         toggleUpload: false,
         uploadFrequency: 1000,
         packetSize: 1,
+        username: undefined,
+        password: undefined,
     },
     theme: {
         darkMode: false,
