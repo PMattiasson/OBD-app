@@ -30,9 +30,23 @@ export default function WebSocketManager() {
 
     // Connection to server WebSocket
     useEffect(() => {
-        const httpURL = settings.server.apiURL.replace('ws', 'http');
+        const httpURL = settings.server.apiURL?.replace('ws', 'http');
 
-        connect();
+        if (settings.server.toggleUpload) {
+            authorize().then((authorized) => {
+                if (authorized) {
+                    console.log('Authorized to server');
+                    connect();
+                } else {
+                    console.log('Failed to authorize to server');
+                    toast({
+                        type: 'open',
+                        message: 'Failed to authorize to server',
+                        toastType: 'error',
+                    });
+                }
+            });
+        }
 
         return () => disconnect();
 
@@ -51,9 +65,11 @@ export default function WebSocketManager() {
                     password: password,
                 }),
             })
-                .then((response) => response.json())
-                .then((json) => {
-                    if (json.result === 'OK') return true;
+                .then((response) => response.text())
+                .then((responseData) => {
+                    console.log(responseData);
+                    const data = JSON.parse(responseData);
+                    if (data.result === 'OK') return true;
                     else return false;
                 })
                 .catch((error) => console.log(error));
@@ -61,31 +77,35 @@ export default function WebSocketManager() {
 
         async function connect() {
             try {
-                if (settings.server.toggleUpload) {
-                    const authResult = await authorize();
-                    if (authResult == false) {
-                        console.log('Failed to authorize to server');
-                        return;
-                    }
-                    console.log('Authorized to server');
+                const wsURL = settings.server.apiURL;
+                ws.current = new WebSocket(wsURL);
 
-                    const wsURL = settings.server.apiURL;
-                    ws.current = new WebSocket(wsURL);
+                ws.current.onopen = () => {
+                    connected.current = true;
+                    console.log('ws opened');
+                    toast({
+                        type: 'open',
+                        message: 'Connected to server WebSocket',
+                        toastType: 'success',
+                    });
+                };
 
-                    ws.current.onopen = () => {
-                        connected.current = true;
-                        console.log('ws opened');
+                ws.onmessage = (event) => {
+                    // a message was received
+                    console.log(event.data);
+                };
+
+                ws.current.onclose = (event) => {
+                    console.log('ws closed', event);
+
+                    if (event?.code === 1000) {
                         toast({
                             type: 'open',
-                            message: 'Connected to server WebSocket',
+                            message: 'Disconnected from server WebSocket',
                             toastType: 'success',
                         });
-                    };
-
-                    ws.current.onclose = () => {
-                        console.log('ws closed');
+                    } else {
                         if (connected.current) {
-                            connected.current = false;
                             toast({
                                 type: 'open',
                                 message: 'Lost connection to server WebSocket',
@@ -98,10 +118,18 @@ export default function WebSocketManager() {
                                 toastType: 'error',
                             });
                         }
-                    };
+                        setTimeout(() => connect(), 5000);
+                    }
 
-                    wsCurrent = ws.current;
-                }
+                    connected.current = false;
+                };
+
+                ws.onerror = (event) => {
+                    // an error occurred
+                    console.log(event.message);
+                };
+
+                wsCurrent = ws.current;
             } catch (e) {
                 console.log(e);
             }
