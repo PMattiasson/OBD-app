@@ -1,7 +1,8 @@
 /* eslint-disable react-native/no-raw-text */
-import { useState, useContext } from 'react';
+import { useState, useContext, useRef } from 'react';
 import { ScrollView } from 'react-native';
 import {
+    Button,
     Checkbox,
     Divider,
     HelperText,
@@ -38,6 +39,7 @@ export default function SettingsScreen({ navigation }) {
             ModalUpdateFrequency,
             ModalAddress,
             ModalUploadFrequency,
+            ModalSignIn,
         };
 
         let SelectedModal = Modals[modal.type];
@@ -160,6 +162,63 @@ export default function SettingsScreen({ navigation }) {
         );
     }
 
+    function ModalSignIn() {
+        const [username, setUsername] = useState(settings.server.username);
+        const [password, setPassword] = useState(settings.server.password);
+        const refPasswordInput = useRef();
+
+        function handleSubmit() {
+            dispatch({
+                type: 'SET',
+                object: 'server',
+                property: 'username',
+                value: username,
+            });
+            dispatch({
+                type: 'SET',
+                object: 'server',
+                property: 'password',
+                value: password,
+            });
+            hideModal();
+        }
+
+        return (
+            <Modal
+                visible={modal.visible}
+                onDismiss={hideModal}
+                contentContainerStyle={containerStyle}
+                style={modalStyle}
+            >
+                <Text variant="titleMedium">Enter server account credentials</Text>
+                <TextInput
+                    style={{ marginTop: 15 }}
+                    mode={'outlined'}
+                    label={'Username'}
+                    value={username}
+                    onChangeText={(text) => setUsername(text)}
+                    returnKeyType={'next'}
+                    onSubmitEditing={() => refPasswordInput.current.focus()}
+                    blurOnSubmit={false}
+                    autoCapitalize={'none'}
+                />
+                <TextInput
+                    ref={refPasswordInput}
+                    style={{ marginTop: 15 }}
+                    mode={'outlined'}
+                    label={'Password'}
+                    value={password}
+                    onChangeText={(text) => setPassword(text)}
+                    onSubmitEditing={handleSubmit}
+                    secureTextEntry={true}
+                />
+                <Button style={{ marginTop: 20 }} onPress={handleSubmit} mode="contained">
+                    Confirm
+                </Button>
+            </Modal>
+        );
+    }
+
     return (
         <>
             <Portal>
@@ -264,6 +323,13 @@ export default function SettingsScreen({ navigation }) {
                         left={(props) => <List.Icon {...props} icon="update" />}
                         onPress={() => {
                             setModal({ visible: true, type: 'ModalUploadFrequency' });
+                        }}
+                    />
+                    <List.Item
+                        title="Account credentials"
+                        left={(props) => <List.Icon {...props} icon="account" />}
+                        onPress={() => {
+                            setModal({ visible: true, type: 'ModalSignIn' });
                         }}
                     />
                     {/* <List.Item
