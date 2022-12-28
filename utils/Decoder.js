@@ -24,9 +24,9 @@ export function decodePID(hexString) {
             hexBytes.push(hexString.substring(i, i + 2));
         }
         // Assign the corresponding bytes
-        messageResponse.bytes = parseInt(hexBytes[0], 10);
-        messageResponse.mode = hexBytes[1];
-        messageResponse.PID = hexBytes[2];
+        messageResponse.bytes = parseInt(hexBytes[0], 16);
+        messageResponse.mode = parseInt(hexBytes[1], 16);
+        messageResponse.PID = parseInt(hexBytes[2], 16);
 
         // Assign A, B, C, D
         Object.keys(messageResponse.data).map((key, i) => {
@@ -47,14 +47,14 @@ export function decodePID(hexString) {
         let value = parseInt(hexValueString, 16);
 
         // Calculate message value from formula
-        response.value = convertFormula(response, value);
+        response.value = convertFormula(response.offset, response.scale, value);
         return response;
     } catch (error) {
         console.log('Error decoding message: ', error);
     }
 }
 
-function convertFormula(objResponse, decValue) {
-    let result = objResponse.offset + objResponse.scale * decValue;
+function convertFormula(offset, scale, decValue) {
+    let result = offset + scale * decValue;
     return result;
 }
