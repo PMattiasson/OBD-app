@@ -18,9 +18,10 @@ export default function WebSocketManager() {
         try {
             if (Object.keys(data).length == 0 || connected.current === false) return;
 
-            const dataSnippet = objectMap(data, (val) => {
+            let dataSnippet = objectMap(data, (val) => {
                 return val.value;
             });
+            dataSnippet = { ...dataSnippet, timestamp: Date.now() };
             const message = JSON.stringify(dataSnippet);
             ws.current.send(message);
         } catch (e) {
@@ -46,9 +47,8 @@ export default function WebSocketManager() {
                     });
                 }
             });
+            return () => disconnect();
         }
-
-        return () => disconnect();
 
         async function authorize() {
             const username = settings.server.username;
