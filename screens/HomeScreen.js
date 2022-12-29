@@ -26,7 +26,6 @@ export default function HomeScreen() {
                 />
 
                 {settings.debug.toggleSimulation && <OBDSimulator />}
-                <LocationManager />
             </View>
 
             <View style={styles.container.center}>
