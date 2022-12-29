@@ -30,6 +30,13 @@ export default function CustomNavigationBar({ route, navigation, back }) {
                         }}
                         title="Settings"
                     />
+                    <Menu.Item
+                        onPress={() => {
+                            closeMenu();
+                            navigation.navigate('About');
+                        }}
+                        title="About"
+                    />
                 </Menu>
             )}
         </Appbar.Header>

@@ -2,6 +2,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import BottomTabs from './BottomTabs';
 import DeviceScreen from '../screens/DeviceScreen';
+import AboutScreen from '../screens/AboutScreen';
 import CustomNavigationBar from './CustomNavigationBar';
 
 const NavigationBarOption = {
@@ -17,6 +18,7 @@ export default function StackNavigator({ theme }) {
             <Stack.Navigator screenOptions={NavigationBarOption}>
                 <Stack.Screen name="Root" component={BottomTabs} />
                 <Stack.Screen name="Devices" component={DeviceScreen} />
+                <Stack.Screen name="About" component={AboutScreen} />
             </Stack.Navigator>
         </NavigationContainer>
     );
