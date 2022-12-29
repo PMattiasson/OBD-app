@@ -13,6 +13,7 @@ export default function WebSocketManager() {
     const { dispatch: toast } = useToast();
     let ws = useRef(null);
     let connected = useRef(false);
+    let authorized = useRef(false);
 
     const sendData = useCallback(() => {
         try {
@@ -29,28 +30,10 @@ export default function WebSocketManager() {
         }
     }, [data]);
 
-    // Connection to server WebSocket
+    // Auth to server
     useEffect(() => {
-        const httpURL = settings.server.apiURL?.replace('ws', 'http');
-
-        if (settings.server.toggleUpload) {
-            authorize().then((authorized) => {
-                if (authorized) {
-                    console.log('Authorized to server');
-                    connect();
-                } else {
-                    console.log('Failed to authorize to server');
-                    toast({
-                        type: 'open',
-                        message: 'Failed to authorize to server',
-                        toastType: 'error',
-                    });
-                }
-            });
-            return () => disconnect();
-        }
-
         async function authorize() {
+            const httpURL = settings.server.apiURL;
             const username = settings.server.username;
             const password = settings.server.password;
 
@@ -75,10 +58,33 @@ export default function WebSocketManager() {
                 .catch((error) => console.log(error));
         }
 
+        authorize().then((auth) => {
+            if (auth) {
+                console.log('Authorized to server');
+                authorized.current = auth;
+            } else {
+                console.log('Failed to authorize to server');
+                toast({
+                    type: 'open',
+                    message: 'Failed to authorize to server',
+                    toastType: 'error',
+                });
+            }
+        });
+    }, [settings.server.apiURL, settings.server.username, settings.server.password]);
+
+    // Connection to server WebSocket
+    useEffect(() => {
+        const httpURL = settings.server.apiURL;
+
+        if (settings.server.toggleUpload && authorized.current) {
+            connect();
+            return () => disconnect();
+        }
+
         async function connect() {
             try {
-                const wsURL = settings.server.apiURL;
-                ws.current = new WebSocket(wsURL);
+                ws.current = new WebSocket(httpURL);
 
                 ws.current.onopen = () => {
                     connected.current = true;
@@ -118,7 +124,7 @@ export default function WebSocketManager() {
                                 toastType: 'error',
                             });
                         }
-                        setTimeout(() => connect(), 5000);
+                        setTimeout(() => settings.server.toggleUpload && connect(), 5000);
                     }
 
                     connected.current = false;
