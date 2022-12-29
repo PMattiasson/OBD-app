@@ -6,6 +6,7 @@ import { useData } from '../context/DataContext';
 import { useSettings } from '../context/SettingsContext';
 import OBDSimulator from '../components/OBDSimulator';
 import DataText from '../components/DataText';
+import LocationManager from '../components/LocationManager';
 
 export default function HomeScreen() {
     const data = useData();
@@ -44,7 +45,7 @@ export default function HomeScreen() {
                 </View>
             </View>
 
-            <Speedometer speedKPH={data?.VehicleSpeed ? data.VehicleSpeed.value : 0} />
+            <Speedometer speedKPH={data?.vehicleSpeed ? data.vehicleSpeed.value : 0} />
         </View>
     );
 }

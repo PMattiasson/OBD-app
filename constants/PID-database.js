@@ -1,7 +1,7 @@
 const modeCurrentData = 1;
 const responsePIDs = [
     {
-        name: 'EngineRPM',
+        name: 'engineRPM',
         description: 'Engine RPM',
         PID: 12,
         mode: modeCurrentData,
@@ -14,7 +14,7 @@ const responsePIDs = [
         value: 0,
     },
     {
-        name: 'VehicleSpeed',
+        name: 'vehicleSpeed',
         description: 'Vehicle speed',
         PID: 13,
         mode: modeCurrentData,
@@ -27,7 +27,7 @@ const responsePIDs = [
         value: 0,
     },
     {
-        name: 'CoolantTemperature',
+        name: 'coolantTemperature',
         description: 'Engine coolant temperature',
         PID: 5,
         mode: modeCurrentData,
