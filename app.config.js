@@ -11,6 +11,11 @@ module.exports = ({ config }) => {
         },
         android: {
             package: IS_DEV ? 'com.per.obd.dev' : 'com.per.obd',
+            config: {
+                googleMaps: {
+                    apiKey: process.env.MAPS_API_KEY,
+                },
+            },
         },
     };
 };

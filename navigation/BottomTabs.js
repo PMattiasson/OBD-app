@@ -3,6 +3,8 @@ import HomeScreen from '../screens/HomeScreen';
 import BluetoothScreen from '../screens/BluetoothScreen';
 import SettingsScreen from '../screens/SettingsScreens';
 import { useTheme } from 'react-native-paper';
+import MapScreen from '../screens/MapScreen';
+import ChartScreen from '../screens/ChartScreen';
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -27,6 +29,14 @@ export default function BottomTabs() {
                 options={{
                     tabBarLabel: 'Connect',
                     tabBarIcon: 'bluetooth',
+                }}
+            />
+            <Tab.Screen
+                name="Maps"
+                component={MapScreen}
+                options={{
+                    tabBarLabel: 'Maps',
+                    tabBarIcon: 'map-outline',
                 }}
             />
             <Tab.Screen
