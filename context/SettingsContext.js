@@ -2,6 +2,7 @@ import { createContext, useContext, useReducer, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ThemeContext from './ThemeContext';
 import merge from 'deepmerge';
+import { activateKeepAwake } from 'expo-keep-awake';
 
 const SettingsContext = createContext(null);
 
@@ -17,6 +18,7 @@ export function SettingsProvider({ children }) {
             const initSettings = await getSettings();
             dispatch({ type: 'ADD', settings: initSettings });
             initSettings.theme.darkMode && toggleTheme();
+            initSettings.theme.keepAwake && activateKeepAwake();
         })();
     }, []);
 
@@ -99,6 +101,7 @@ const defaultSettings = {
     },
     theme: {
         darkMode: false,
+        keepAwake: true,
     },
     maps: {
         toggleGPS: false,

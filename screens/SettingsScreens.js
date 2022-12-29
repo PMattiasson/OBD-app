@@ -17,6 +17,7 @@ import {
 import { styles } from '../styles/styles';
 import { useSettings, useSettingsDispatch } from '../context/SettingsContext';
 import ThemeContext from '../context/ThemeContext';
+import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake';
 
 export default function SettingsScreen({ navigation }) {
     const settings = useSettings();
@@ -384,6 +385,21 @@ export default function SettingsScreen({ navigation }) {
                                 object: 'theme',
                                 property: 'darkMode',
                                 value: !isThemeDark,
+                            });
+                        }}
+                    />
+                    <List.Item
+                        title="Keep screen awake"
+                        left={(props) => <List.Icon {...props} icon="eye-outline" />}
+                        right={() => (
+                            <Checkbox status={settings.theme.keepAwake ? 'checked' : 'unchecked'} />
+                        )}
+                        onPress={() => {
+                            settings.theme.keepAwake ? deactivateKeepAwake() : activateKeepAwake();
+                            dispatch({
+                                type: 'TOGGLE',
+                                object: 'theme',
+                                property: 'keepAwake',
                             });
                         }}
                     />
