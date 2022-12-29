@@ -97,7 +97,7 @@ export default function SettingsScreen({ navigation }) {
 
         function validURL(str) {
             var pattern = new RegExp(
-                '^(ws?:\\/\\/)?' + // protocol
+                '^(http?:\\/\\/)?' + // protocol
                     '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
                     '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
                     '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
@@ -119,7 +119,7 @@ export default function SettingsScreen({ navigation }) {
                 <TextInput
                     style={{ marginTop: 15 }}
                     mode={'outlined'}
-                    label={'WebSocket URL'}
+                    label={'Server URL'}
                     value={text}
                     onChangeText={(text) => setText(text)}
                     onSubmitEditing={handleSubmit}
@@ -252,7 +252,7 @@ export default function SettingsScreen({ navigation }) {
                         }
                     />
                     <List.Item
-                        title="Update interval"
+                        title="Sampling interval"
                         description={
                             settings.bluetooth.updateFrequency
                                 ? `${settings.bluetooth.updateFrequency} ms`
@@ -287,7 +287,7 @@ export default function SettingsScreen({ navigation }) {
 
                     <List.Subheader>Cloud Server</List.Subheader>
                     <List.Item
-                        title="WebSocket address"
+                        title="Server address"
                         description={settings.server.apiURL ?? 'Not defined'}
                         left={(props) => <List.Icon {...props} icon="link" />}
                         onPress={() => {
@@ -371,9 +371,9 @@ export default function SettingsScreen({ navigation }) {
 
                     <Divider />
 
-                    <List.Subheader>Theme</List.Subheader>
+                    <List.Subheader>User interface</List.Subheader>
                     <List.Item
-                        title="Dark mode"
+                        title="Dark theme"
                         left={(props) => <List.Icon {...props} icon="theme-light-dark" />}
                         right={() => (
                             <Checkbox status={settings.theme.darkMode ? 'checked' : 'unchecked'} />
