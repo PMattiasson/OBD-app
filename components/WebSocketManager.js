@@ -14,6 +14,9 @@ export default function WebSocketManager() {
     let ws = useRef(null);
     let connected = useRef(false);
     let authorized = useRef(false);
+    const toggleUploadRef = useRef(settings.server.toggleUpload);
+    const usernameRef = useRef(settings.server.username);
+    const passwordRef = useRef(settings.server.password);
 
     const sendData = useCallback(() => {
         try {
@@ -30,55 +33,82 @@ export default function WebSocketManager() {
         }
     }, [data]);
 
+    async function authorize(httpURL, username, password) {
+        return fetch(`${httpURL}login`, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                username: username,
+                password: password,
+            }),
+        })
+            .then((response) => response.text())
+            .then((responseData) => {
+                // console.log(responseData);
+                const data = JSON.parse(responseData);
+                if (data.result === 'OK') {
+                    authorized.current = true;
+                    return true;
+                } else {
+                    authorized.current = false;
+                    return false;
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+                authorized.current = false;
+                return false;
+            });
+    }
+
     // Auth to server
     useEffect(() => {
-        async function authorize() {
-            const httpURL = settings.server.apiURL;
-            const username = settings.server.username;
-            const password = settings.server.password;
+        const httpURL = settings.server.apiURL;
+        usernameRef.current = settings.server.username;
+        passwordRef.current = settings.server.password;
 
-            return fetch(`${httpURL}login`, {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    username: username,
-                    password: password,
-                }),
-            })
-                .then((response) => response.text())
-                .then((responseData) => {
-                    console.log(responseData);
-                    const data = JSON.parse(responseData);
-                    if (data.result === 'OK') return true;
-                    else return false;
-                })
-                .catch((error) => console.log(error));
+        if (httpURL?.length > 0) {
+            authorize(httpURL, usernameRef.current, passwordRef.current).then((auth) => {
+                if (auth) {
+                    console.log('Authorized to server');
+                } else {
+                    console.log('Failed to authorize to server');
+                    toast({
+                        type: 'open',
+                        message: 'Failed to authorize to server',
+                        toastType: 'error',
+                    });
+                }
+            });
         }
-
-        authorize().then((auth) => {
-            if (auth) {
-                console.log('Authorized to server');
-                authorized.current = auth;
-            } else {
-                console.log('Failed to authorize to server');
-                toast({
-                    type: 'open',
-                    message: 'Failed to authorize to server',
-                    toastType: 'error',
-                });
-            }
-        });
+        return () => fetch(`${httpURL}logout`, { method: 'DELETE' });
     }, [settings.server.apiURL, settings.server.username, settings.server.password]);
 
     // Connection to server WebSocket
     useEffect(() => {
         const httpURL = settings.server.apiURL;
+        toggleUploadRef.current = settings.server.toggleUpload;
 
-        if (settings.server.toggleUpload && authorized.current) {
-            connect();
+        if (settings.server.toggleUpload) {
+            if (authorized.current === false) {
+                authorize(httpURL, usernameRef.current, passwordRef.current).then((auth) => {
+                    if (auth) {
+                        connect();
+                    } else {
+                        console.log('Failed to authorize to server');
+                        toast({
+                            type: 'open',
+                            message: 'Failed to authorize to server',
+                            toastType: 'error',
+                        });
+                    }
+                });
+            } else {
+                connect();
+            }
             return () => disconnect();
         }
 
@@ -111,6 +141,7 @@ export default function WebSocketManager() {
                             toastType: 'success',
                         });
                     } else {
+                        authorized.current = false;
                         if (connected.current) {
                             toast({
                                 type: 'open',
@@ -124,7 +155,9 @@ export default function WebSocketManager() {
                                 toastType: 'error',
                             });
                         }
-                        setTimeout(() => settings.server.toggleUpload && connect(), 5000);
+                        setTimeout(() => {
+                            if (toggleUploadRef.current) connect();
+                        }, 5000);
                     }
 
                     connected.current = false;
@@ -143,7 +176,6 @@ export default function WebSocketManager() {
 
         function disconnect() {
             wsCurrent?.close();
-            fetch(`${httpURL}logout`, { method: 'DELETE' });
         }
     }, [settings.server.apiURL, settings.server.toggleUpload]);
 
