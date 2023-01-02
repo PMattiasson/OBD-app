@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-raw-text */
 import { useState, useEffect, useContext } from 'react';
-import { View, ScrollView } from 'react-native';
+import { View } from 'react-native';
 import useBluetooth from '../hooks/useBluetooth';
 import { Button, List, Card, useTheme, Text } from 'react-native-paper';
 import DropDownPicker from 'react-native-dropdown-picker';
@@ -9,7 +9,7 @@ import { useBluetoothState } from '../context/BluetoothContext';
 import { useSettings } from '../context/SettingsContext';
 import ThemeContext from '../context/ThemeContext';
 
-export default function BluetoothScreen({ navigation }) {
+export default function BluetoothScreen() {
     const { toggleConnection, request, setRequest, response, write } = useBluetooth();
 
     const { state } = useBluetoothState();
@@ -26,10 +26,17 @@ export default function BluetoothScreen({ navigation }) {
     const [showDropDown, setShowDropDown] = useState(false);
     const [items, setItems] = useState([
         { label: 'OBD-II request messages', value: 'obd' },
-        { label: '0D - Vehicle speed', value: '02 01 0D', parent: 'obd' },
-        { label: '0C - Engine speed', value: '02 01 0C', parent: 'obd' },
-        { label: '05 - Coolant temperature', value: '02 01 05', parent: 'obd' },
+        { label: '1F - Run time since engine start', value: '02011F', parent: 'obd' },
+        { label: '11 - Throttle position', value: '020111', parent: 'obd' },
+        { label: '10 - Mass air flow rate', value: '020110', parent: 'obd' },
+        { label: '0F - Intake air temperature', value: '02010F', parent: 'obd' },
+        { label: '0D - Vehicle speed', value: '02010D', parent: 'obd' },
+        { label: '0C - Engine speed', value: '02010C', parent: 'obd' },
+        { label: '0A - Fuel pressure', value: '02010A', parent: 'obd' },
+        { label: '05 - Coolant temperature', value: '020105', parent: 'obd' },
+        { label: '04 - Calculated engine load', value: '020104', parent: 'obd' },
         { label: 'Custom messages', value: 'custom' },
+        { label: 'Clear all requests', value: 'CMD+STOP', parent: 'custom' },
     ]);
 
     useEffect(() => {

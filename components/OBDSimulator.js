@@ -22,7 +22,17 @@ export default function OBDSimulator() {
                     const msgTemp = `034105${valByte.toString(16)}`;
                     const msgSpeed = `03410D${valByte.toString(16)}`;
                     const msgEngine = `04410C${val.toString(16)}`;
-                    const messages = [msgSpeed, msgEngine, msgTemp];
+                    const msgPressure = `03410A${valByte.toString(16)}`;
+                    const msgAirFlow = `034110${val.toString(16)}`;
+                    const msgLoad = `034104${valByte.toString(16)}`;
+                    const messages = [
+                        msgSpeed,
+                        msgEngine,
+                        msgTemp,
+                        msgPressure,
+                        msgAirFlow,
+                        msgLoad,
+                    ];
                     messages.map((msg) => {
                         dispatch({
                             type: 'decode',
