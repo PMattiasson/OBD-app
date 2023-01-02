@@ -56,5 +56,6 @@ export function decodePID(hexString) {
 
 function convertFormula(offset, scale, decValue) {
     let result = offset + scale * decValue;
-    return result;
+    if (Number.isInteger(result)) return result;
+    else return +result.toFixed(2);
 }
