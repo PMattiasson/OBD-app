@@ -6,13 +6,17 @@ import RNBluetoothClassic from 'react-native-bluetooth-classic';
 import { useDataDispatch } from '../context/DataContext';
 import { useBluetoothState } from '../context/BluetoothContext';
 import { useToast } from '../context/ToastContext';
+import { useSettings } from '../context/SettingsContext';
 
 export default function useBluetooth() {
     const { state, setState } = useBluetoothState();
+    const settings = useSettings();
     const { dispatch: toast } = useToast();
 
     const [request, setRequest] = useState([]);
     const [response, setResponse] = useState([]);
+    const prevRequest = useRef([]);
+    const reconnectInterval = useRef(null);
 
     const dispatch = useDataDispatch();
 
@@ -97,6 +101,10 @@ export default function useBluetooth() {
                 message: `Successfuly connected to ${state.device?.name}`,
                 toastType: 'success',
             });
+            if (settings.bluetooth.autoConnect) {
+                clearInterval(reconnectInterval.current);
+                reconnectInterval.current = null;
+            }
         } catch (error) {
             setState({ ...state, loading: false });
             console.error(`Connection failed: ${error.message}`);
@@ -135,6 +143,10 @@ export default function useBluetooth() {
                 message: `Connection lost to ${state.device?.name}!`,
                 toastType: 'error',
             });
+
+            if (settings.bluetooth.autoConnect) {
+                reconnectInterval.current = setInterval(connect, 10000);
+            }
         }
     }
 
@@ -168,8 +180,10 @@ export default function useBluetooth() {
 
     // Handle requests
     useEffect(() => {
-        // TODO handle individual insertion and removal of requests
         if (state.connection) {
+            const result = prevRequest.current.every((req) => request.includes(req));
+            if (result === false) write('CMD+STOP');
+            prevRequest.current = request;
             write(request);
         }
     }, [request, write, state.connection]);
