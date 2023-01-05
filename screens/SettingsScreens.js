@@ -295,7 +295,7 @@ export default function SettingsScreen({ navigation }) {
                         }}
                     />
                     <List.Item
-                        title="Toggle upload"
+                        title="Upload data"
                         left={(props) => <List.Icon {...props} icon="cloud-upload-outline" />}
                         right={() => (
                             <Checkbox
@@ -353,9 +353,9 @@ export default function SettingsScreen({ navigation }) {
 
                     <Divider />
 
-                    <List.Subheader>Maps</List.Subheader>
+                    <List.Subheader>Location</List.Subheader>
                     <List.Item
-                        title="Toggle GPS"
+                        title="GPS logging"
                         left={(props) => <List.Icon {...props} icon="crosshairs-gps" />}
                         right={() => (
                             <Checkbox status={settings.maps.toggleGPS ? 'checked' : 'unchecked'} />
