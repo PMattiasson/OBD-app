@@ -8,6 +8,8 @@ import { useBluetoothState } from '../context/BluetoothContext';
 import { useToast } from '../context/ToastContext';
 import { useSettings } from '../context/SettingsContext';
 
+const msgStop = 'CMD+STOP';
+
 export default function useBluetooth() {
     const { state, setState } = useBluetoothState();
     const settings = useSettings();
@@ -118,7 +120,6 @@ export default function useBluetooth() {
 
     async function disconnect() {
         try {
-            const msgStop = 'CMD+STOP';
             await write([msgStop]);
 
             const disconnected = await state.device.disconnect();
@@ -180,12 +181,14 @@ export default function useBluetooth() {
 
     // Handle requests
     useEffect(() => {
-        if (state.connection) {
-            const result = prevRequest.current.every((req) => request.includes(req));
-            if (result === false) write('CMD+STOP');
-            prevRequest.current = request;
-            write(request);
-        }
+        (async () => {
+            if (state.connection) {
+                const result = prevRequest.current.every((req) => request.includes(req));
+                if (result === false) await write([msgStop]);
+                prevRequest.current = request;
+                write(request);
+            }
+        })();
     }, [request, write, state.connection]);
 
     function unsubscribe() {
