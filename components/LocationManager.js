@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import * as Location from 'expo-location';
-import { Text } from 'react-native-paper';
 import { useSettings } from '../context/SettingsContext';
 
 export default function LocationManager() {
@@ -43,10 +42,12 @@ export default function LocationManager() {
                 }
 
                 locationSubscription.current = Location.watchPositionAsync(
+
+                locationSubscription.current = await Location.watchPositionAsync(
                     { accuracy: Location.Accuracy.Highest },
                     (location) => {
                         setLocation(location);
-                        console.log(location);
+                        // console.log(location);
                         sendData(
                             location.timestamp,
                             location.coords.latitude,
@@ -54,16 +55,8 @@ export default function LocationManager() {
                         );
                     },
                 );
-                return () => locationSubscription.current?.remove();
             })();
+            return () => locationSubscription.current?.remove();
         }
     }, [settings.maps.toggleGPS, sendData]);
-
-    // return (
-    //     <>
-    //         <Text>{location?.timestamp}</Text>
-    //         <Text>Latitude: {location?.coords.latitude}</Text>
-    //         <Text>Longitude: {location?.coords.longitude}</Text>
-    //     </>
-    // );
 }
