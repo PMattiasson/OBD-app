@@ -1,39 +1,12 @@
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { Text } from 'react-native-paper';
-import { useData } from '../components/DataContext';
-import DataChart from '../components/DataChart';
+import Charts from '../components/Charts';
+import { styles } from '../styles/styles';
 
-export default function Chart() {
-    const data = useData();
+export default function ChartScreen() {
     return (
-        <View style={styles.container}>
-            <Text style={styles.titleText}>{data.description}</Text>
-            <DataChart data={data}/>
+        <View style={styles.container.base}>
+            <Charts pidName={'engineRPM'} />
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 16
-    },
-    baseText: {
-        fontSize: 15,
-        fontFamily: 'Cochin',
-        color: 'black'
-    },
-    titleText: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: 'black'
-    },
-    rowView: {
-        justifyContent: 'space-around',
-        alignItems: 'flex-start',
-        flexDirection: 'row',
-    },
-});
