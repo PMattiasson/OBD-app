@@ -41,7 +41,7 @@ export default function LocationManager() {
                     return;
                 }
 
-                locationSubscription.current = Location.watchPositionAsync(
+                await Location.enableNetworkProviderAsync().catch((error) => console.log(error));
 
                 locationSubscription.current = await Location.watchPositionAsync(
                     { accuracy: Location.Accuracy.Highest },
