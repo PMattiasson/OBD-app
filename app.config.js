@@ -10,6 +10,7 @@ module.exports = ({ config }) => {
             bundleIdentifier: IS_DEV ? 'com.per.obd.dev' : 'com.per.obd',
         },
         android: {
+            ...config.android,
             package: IS_DEV ? 'com.per.obd.dev' : 'com.per.obd',
             config: {
                 googleMaps: {
