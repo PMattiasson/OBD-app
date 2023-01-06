@@ -15,7 +15,7 @@ export default function useBluetooth() {
     const settings = useSettings();
     const { dispatch: toast } = useToast();
     const prevRequest = useRef([]);
-    const reconnectInterval = useRef(null);
+    const reconnectRef = useRef(settings.bluetooth.autoConnect);
 
     const dispatch = useDataDispatch();
 
@@ -100,10 +100,6 @@ export default function useBluetooth() {
                 message: `Successfuly connected to ${state.device?.name}`,
                 toastType: 'success',
             });
-            if (settings.bluetooth.autoConnect) {
-                clearInterval(reconnectInterval.current);
-                reconnectInterval.current = null;
-            }
         } catch (error) {
             setState({ ...state, loading: false });
             console.error(`Connection failed: ${error.message}`);
@@ -112,6 +108,9 @@ export default function useBluetooth() {
                 message: `Could not connect to Bluetooth device ${state.device?.name}`,
                 toastType: 'error',
             });
+            if (reconnectRef.current) {
+                connect();
+            }
         }
     }
 
@@ -142,11 +141,15 @@ export default function useBluetooth() {
                 toastType: 'error',
             });
 
-            if (settings.bluetooth.autoConnect) {
-                reconnectInterval.current = setInterval(connect, 10000);
+            if (reconnectRef.current) {
+                connect();
             }
         }
     }
+
+    useEffect(() => {
+        reconnectRef.current = settings.bluetooth.autoConnect;
+    }, [settings.bluetooth.autoConnect]);
 
     async function onDataReceived(event) {
         const data = event.data;
