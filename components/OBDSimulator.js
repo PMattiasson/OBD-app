@@ -1,13 +1,54 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import Slider from '@react-native-community/slider';
 import { Text } from 'react-native-paper';
 import { useDataDispatch } from '../context/DataContext';
+import { useBluetoothState } from '../context/BluetoothContext';
 
 const map = (value, x1, y1, x2, y2) => ((value - x1) * (y2 - x2)) / (y1 - x1) + x2;
 
 export default function OBDSimulator() {
     const [value, setValue] = useState(0);
     const dispatch = useDataDispatch();
+    const { requests, setResponses } = useBluetoothState();
+
+    const handleValueChange = useCallback(
+        (value) => {
+            setValue(value);
+            const valByte = Math.round(map(value, 0, 65535, 0, 255));
+            let responses = [];
+
+            requests.forEach((req) => {
+                switch (req) {
+                case '020104':
+                    responses.push(`034104${valByte.toString(16)}`);
+                    break;
+                case '020105':
+                    responses.push(`034105${valByte.toString(16)}`);
+                    break;
+                case '02010A':
+                    responses.push(`03410A${valByte.toString(16)}`);
+                    break;
+                case '02010C':
+                    responses.push(`04410C${value.toString(16)}`);
+                    break;
+                case '02010D':
+                    responses.push(`03410D${valByte.toString(16)}`);
+                    break;
+                case '020110':
+                    responses.push(`034110${value.toString(16)}`);
+                    break;
+                }
+            });
+
+            setResponses(responses);
+            dispatch({
+                type: 'decode',
+                responses: responses,
+                timestamp: Date.now(),
+            });
+        },
+        [requests],
+    );
 
     return (
         <>
@@ -16,30 +57,7 @@ export default function OBDSimulator() {
                 minimumValue={0}
                 maximumValue={65535}
                 value={0}
-                onValueChange={(val) => {
-                    setValue(val);
-                    const valByte = Math.round(map(val, 0, 65535, 0, 255));
-                    const msgTemp = `034105${valByte.toString(16)}`;
-                    const msgSpeed = `03410D${valByte.toString(16)}`;
-                    const msgEngine = `04410C${val.toString(16)}`;
-                    const msgPressure = `03410A${valByte.toString(16)}`;
-                    const msgAirFlow = `034110${val.toString(16)}`;
-                    const msgLoad = `034104${valByte.toString(16)}`;
-                    const messages = [
-                        msgSpeed,
-                        msgEngine,
-                        msgTemp,
-                        msgPressure,
-                        msgAirFlow,
-                        msgLoad,
-                    ];
-                    messages.map((msg) => {
-                        dispatch({
-                            type: 'decode',
-                            message: msg,
-                        });
-                    });
-                }}
+                onValueChange={handleValueChange}
                 step={1}
             />
             <Text>Value: {value}</Text>
