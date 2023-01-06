@@ -155,13 +155,12 @@ export default function useBluetooth() {
         const data = event.data;
         if (data !== null) {
             const responses = data.split('\n');
-            responses.map((res) => {
                 dispatch({
                     type: 'decode',
-                    message: res,
+                responses: responses,
+                timestamp: Date.now(),
                 });
-            });
-            setResponse(responses);
+            setResponses(responses);
         }
         // console.log('Data received:', data);
     }

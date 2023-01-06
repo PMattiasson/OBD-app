@@ -28,36 +28,42 @@ export function useDataDispatch() {
 function dataReducer(data, action) {
     switch (action.type) {
     case 'decode': {
-        const decodedMessage = decodePID(action.message);
-        if (decodedMessage === null) {
-            return data;
-        }
+        let newData = data;
 
-        if (myPIDs.includes(decodedMessage.PID)) {
-            return objectMap(data, (val, key) => {
-                if (key === decodedMessage.name) {
-                    // Modify PID object
-                    return { ...val, value: decodedMessage.value };
-                } else {
-                    // No change
-                    return val;
-                }
-            });
-        } else {
-            // Add new PID object
-            myPIDs.push(decodedMessage.PID);
-            return {
-                ...data,
-                [decodedMessage.name]: {
-                    value: decodedMessage.value,
-                    description: decodedMessage.description,
-                    unit: decodedMessage.unit,
-                },
-            };
-        }
+        action.responses.forEach((response) => {
+            const decodedMessage = decodePID(response);
+            if (decodedMessage === null) {
+                return;
+            }
+
+            if (myPIDs.includes(decodedMessage.PID)) {
+                newData = objectMap(newData, (val, key) => {
+                    if (key === decodedMessage.name) {
+                        // Modify PID object
+                        return { ...val, value: decodedMessage.value };
+                    } else {
+                        // No change
+                        return val;
+                    }
+                });
+            } else {
+                // Add new PID object
+                myPIDs.push(decodedMessage.PID);
+                newData = {
+                    ...newData,
+                    [decodedMessage.name]: {
+                        value: decodedMessage.value,
+                        description: decodedMessage.description,
+                        unit: decodedMessage.unit,
+                    },
+                };
+            }
+        });
+
+        return newData;
     }
     case 'reset': {
-        return;
+        return {};
     }
     default: {
         throw Error('Unknown action: ' + action.type);
