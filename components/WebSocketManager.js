@@ -17,6 +17,7 @@ export default function WebSocketManager() {
     const toggleUploadRef = useRef(settings.server.toggleUpload);
     const usernameRef = useRef(settings.server.username);
     const passwordRef = useRef(settings.server.password);
+    const reconnectInterval = useRef(null);
 
     const sendData = useCallback(() => {
         try {
@@ -33,8 +34,10 @@ export default function WebSocketManager() {
         }
     }, [data]);
 
-    async function authorize(httpURL, username, password) {
-        return fetch(`${httpURL}login`, {
+    const authorize = useCallback(async (loginURL, username, password, callback) => {
+        if (loginURL?.length === 0) return console.log('Login URL invalid');
+
+        return fetch(loginURL, {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -51,30 +54,12 @@ export default function WebSocketManager() {
                 const data = JSON.parse(responseData);
                 if (data.result === 'OK') {
                     authorized.current = true;
-                    return true;
+                    console.log('Authorized to server');
+                    if (callback && typeof callback === 'function') {
+                        callback();
+                    }
                 } else {
                     authorized.current = false;
-                    return false;
-                }
-            })
-            .catch((error) => {
-                console.log(error);
-                authorized.current = false;
-                return false;
-            });
-    }
-
-    // Auth to server
-    useEffect(() => {
-        const httpURL = settings.server.apiURL;
-        usernameRef.current = settings.server.username;
-        passwordRef.current = settings.server.password;
-
-        if (httpURL?.length > 0) {
-            authorize(httpURL, usernameRef.current, passwordRef.current).then((auth) => {
-                if (auth) {
-                    console.log('Authorized to server');
-                } else {
                     console.log('Failed to authorize to server');
                     toast({
                         type: 'open',
@@ -82,30 +67,40 @@ export default function WebSocketManager() {
                         toastType: 'error',
                     });
                 }
+            })
+            .catch((error) => {
+                authorized.current = false;
+                console.log(error);
+                toast({
+                    type: 'open',
+                    message: 'Failed to connect to server',
+                    toastType: 'error',
+                });
             });
-        }
-        return () => fetch(`${httpURL}logout`, { method: 'DELETE' });
-    }, [settings.server.apiURL, settings.server.username, settings.server.password]);
+    }, []);
+
+    // Auth to server
+    useEffect(() => {
+        const httpURL = settings.server.apiURL;
+        const loginURL = `${httpURL}login`;
+        const logoutURL = `${httpURL}logout`;
+        usernameRef.current = settings.server.username;
+        passwordRef.current = settings.server.password;
+
+        authorize(loginURL, usernameRef.current, passwordRef.current);
+
+        return () => fetch(logoutURL, { method: 'DELETE' });
+    }, [settings.server.apiURL, settings.server.username, settings.server.password, authorize]);
 
     // Connection to server WebSocket
     useEffect(() => {
         const httpURL = settings.server.apiURL;
+        const loginURL = `${httpURL}login`;
         toggleUploadRef.current = settings.server.toggleUpload;
 
         if (settings.server.toggleUpload) {
             if (authorized.current === false) {
-                authorize(httpURL, usernameRef.current, passwordRef.current).then((auth) => {
-                    if (auth) {
-                        connect();
-                    } else {
-                        console.log('Failed to authorize to server');
-                        toast({
-                            type: 'open',
-                            message: 'Failed to authorize to server',
-                            toastType: 'error',
-                        });
-                    }
-                });
+                authorize(loginURL, usernameRef.current, passwordRef.current, connect);
             } else {
                 connect();
             }
@@ -118,6 +113,8 @@ export default function WebSocketManager() {
 
                 ws.current.onopen = () => {
                     connected.current = true;
+                    clearInterval(reconnectInterval.current);
+                    reconnectInterval.current = null;
                     console.log('ws opened');
                     toast({
                         type: 'open',
@@ -155,8 +152,15 @@ export default function WebSocketManager() {
                                 toastType: 'error',
                             });
                         }
-                        setTimeout(() => {
-                            if (toggleUploadRef.current) connect();
+                        reconnectInterval.current = setInterval(() => {
+                            if (toggleUploadRef.current) {
+                                authorize(
+                                    loginURL,
+                                    usernameRef.current,
+                                    passwordRef.current,
+                                    connect,
+                                );
+                            }
                         }, 5000);
                     }
 
@@ -177,7 +181,7 @@ export default function WebSocketManager() {
         function disconnect() {
             wsCurrent?.close();
         }
-    }, [settings.server.apiURL, settings.server.toggleUpload]);
+    }, [settings.server.apiURL, settings.server.toggleUpload, authorize]);
 
     // Send data to server with interval
     useInterval(sendData, settings.server.toggleUpload ? settings.server.uploadFrequency : null);
