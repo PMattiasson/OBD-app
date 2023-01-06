@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-raw-text */
 import { useState, useEffect, useContext } from 'react';
-import { View } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import useBluetooth from '../hooks/useBluetooth';
 import { Button, List, Card, useTheme, Text } from 'react-native-paper';
 import DropDownPicker from 'react-native-dropdown-picker';
@@ -121,7 +121,7 @@ export default function BluetoothScreen() {
                 theme={isThemeDark ? 'DARK' : 'LIGHT'}
             />
 
-            <View style={styles.item.row}>
+            <ScrollView contentContainerStyle={styles.item.row}>
                 <Card style={styles.card.ble}>
                     <Card.Content>
                         <Text variant="titleLarge">Raw OBD-II frame messages</Text>
@@ -150,7 +150,7 @@ export default function BluetoothScreen() {
                         </List.Accordion>
                     </Card.Content>
                 </Card>
-            </View>
+            </ScrollView>
         </View>
     );
 }
