@@ -3,6 +3,7 @@ import {
     DefaultTheme as NavigationDefaultTheme,
     DarkTheme as NavigationDarkTheme,
 } from '@react-navigation/native';
+import { CustomMD3LightTheme, CustomMD3DarkTheme } from './CustomMD3Theme';
 import merge from 'deepmerge';
 
 const { LightTheme, DarkTheme } = adaptNavigationTheme({
@@ -10,8 +11,8 @@ const { LightTheme, DarkTheme } = adaptNavigationTheme({
     dark: NavigationDarkTheme,
 });
 
-export const CombinedDefaultTheme = merge(MD3LightTheme, LightTheme);
-export const CombinedDarkTheme = merge(MD3DarkTheme, DarkTheme);
+export const CombinedDefaultTheme = merge(CustomMD3LightTheme, LightTheme);
+export const CombinedDarkTheme = merge(CustomMD3DarkTheme, DarkTheme);
 
 export const MyLightTheme = {
     ...CombinedDefaultTheme,
