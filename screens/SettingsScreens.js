@@ -424,6 +424,23 @@ export default function SettingsScreen({ navigation }) {
                             });
                         }}
                     />
+                    <List.Item
+                        title="Generate random data values"
+                        description="Simulates data from OBD-II adapter"
+                        left={(props) => <List.Icon {...props} icon="robot" />}
+                        right={() => (
+                            <Checkbox
+                                status={settings.debug.generateRandom ? 'checked' : 'unchecked'}
+                            />
+                        )}
+                        onPress={() => {
+                            dispatch({
+                                type: 'TOGGLE',
+                                object: 'debug',
+                                property: 'generateRandom',
+                            });
+                        }}
+                    />
                 </List.Section>
             </ScrollView>
         </>

@@ -108,5 +108,6 @@ const defaultSettings = {
     },
     debug: {
         toggleSimulation: false,
+        generateRandom: false,
     },
 };
