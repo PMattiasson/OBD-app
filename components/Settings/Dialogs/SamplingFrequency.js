@@ -30,7 +30,7 @@ export default function SamplingFrequency({ visible, hideDialog }) {
                     <RadioButton.Item label="50 ms" value={50} />
                 </RadioButton.Group>
 
-                <LogSlider value={value} onValueChange={setValue} />
+                <LogSlider value={value} onValueChange={setValue} min={50} max={100000} />
             </Dialog.Content>
             <Dialog.Actions>
                 <Button onPress={hideDialog} >Cancel</Button>
