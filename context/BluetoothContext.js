@@ -16,8 +16,13 @@ export function BluetoothProvider({ children }) {
         connection: false,
         loading: false,
     });
+    const [requests, setRequests] = useState([]);
+    const [responses, setResponses] = useState([]);
 
-    const contextValue = useMemo(() => ({ state, setState }), [state, setState]);
+    const contextValue = useMemo(
+        () => ({ state, setState, requests, setRequests, responses, setResponses }),
+        [state, setState, requests, setRequests, responses, setResponses],
+    );
 
     return <BluetoothContext.Provider value={contextValue}>{children}</BluetoothContext.Provider>;
 }

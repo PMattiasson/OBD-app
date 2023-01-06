@@ -11,12 +11,9 @@ import { useSettings } from '../context/SettingsContext';
 const msgStop = 'CMD+STOP';
 
 export default function useBluetooth() {
-    const { state, setState } = useBluetoothState();
+    const { state, setState, requests, setResponses } = useBluetoothState();
     const settings = useSettings();
     const { dispatch: toast } = useToast();
-
-    const [request, setRequest] = useState([]);
-    const [response, setResponse] = useState([]);
     const prevRequest = useRef([]);
     const reconnectInterval = useRef(null);
 
@@ -155,11 +152,11 @@ export default function useBluetooth() {
         const data = event.data;
         if (data !== null) {
             const responses = data.split('\n');
-                dispatch({
-                    type: 'decode',
+            dispatch({
+                type: 'decode',
                 responses: responses,
                 timestamp: Date.now(),
-                });
+            });
             setResponses(responses);
         }
         // console.log('Data received:', data);
@@ -182,13 +179,13 @@ export default function useBluetooth() {
     useEffect(() => {
         (async () => {
             if (state.connection) {
-                const result = prevRequest.current.every((req) => request.includes(req));
+                const result = prevRequest.current.every((req) => requests.includes(req));
                 if (result === false) await write([msgStop]);
-                prevRequest.current = request;
-                write(request);
+                prevRequest.current = requests;
+                write(requests);
             }
         })();
-    }, [request, write, state.connection]);
+    }, [requests, write, state.connection]);
 
     function unsubscribe() {
         connectionSubscription.current?.remove();
@@ -207,8 +204,5 @@ export default function useBluetooth() {
         toggleConnection,
         setDevice,
         write,
-        request,
-        setRequest,
-        response,
     };
 }

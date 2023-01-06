@@ -10,9 +10,9 @@ import { useSettings } from '../context/SettingsContext';
 import ThemeContext from '../context/ThemeContext';
 
 export default function BluetoothScreen() {
-    const { toggleConnection, request, setRequest, response, write } = useBluetooth();
+    const { toggleConnection, write } = useBluetooth();
 
-    const { state } = useBluetoothState();
+    const { state, requests, setRequests, responses } = useBluetoothState();
     const settings = useSettings();
     const theme = useTheme();
     const { isThemeDark } = useContext(ThemeContext);
@@ -101,10 +101,10 @@ export default function BluetoothScreen() {
                 searchPlaceholder={'Search or add custom command'}
                 placeholder="Select request message"
                 open={showDropDown}
-                value={request}
+                value={requests}
                 items={items}
                 setOpen={setShowDropDown}
-                setValue={setRequest}
+                setValue={setRequests}
                 setItems={setItems}
                 searchable={true}
                 categorySelectable={false}
@@ -129,7 +129,7 @@ export default function BluetoothScreen() {
                             title="Sent request messages"
                             left={(props) => <List.Icon {...props} icon="send" />}
                         >
-                            {request.map((item, index) => (
+                            {requests.map((item, index) => (
                                 <List.Item title={item} key={index} />
                             ))}
                         </List.Accordion>
@@ -144,7 +144,7 @@ export default function BluetoothScreen() {
                                 />
                             )}
                         >
-                            {response.map((item, index) => (
+                            {responses.map((item, index) => (
                                 <List.Item title={item} key={index} />
                             ))}
                         </List.Accordion>
