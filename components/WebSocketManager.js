@@ -24,9 +24,9 @@ export default function WebSocketManager() {
             if (Object.keys(data).length == 0 || connected.current === false) return;
 
             let dataSnippet = objectMap(data, (val) => {
-                return val.value;
+                return val?.value;
             });
-            dataSnippet = { ...dataSnippet, timestamp: Date.now() };
+            dataSnippet = { ...dataSnippet, timestamp: data.timestamp };
             const message = JSON.stringify(dataSnippet);
             ws.current.send(message);
         } catch (e) {

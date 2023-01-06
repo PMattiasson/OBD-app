@@ -60,6 +60,8 @@ function dataReducer(data, action) {
             }
         });
 
+        newData = { ...newData, timestamp: action.timestamp };
+
         return newData;
     }
     case 'reset': {
