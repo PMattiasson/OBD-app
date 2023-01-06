@@ -1,26 +1,21 @@
 import { useState } from 'react';
-import { View } from 'react-native';
-import { Button, Dialog, RadioButton, Text, useTheme } from 'react-native-paper';
-import Slider from '@react-native-community/slider';
+import { Button, Dialog, RadioButton } from 'react-native-paper';
 import { useSettings, useSettingsDispatch } from '../../../context/SettingsContext';
-import LogSlider from '../../LogSlider/LogSlider';
+import LogSlider from '../../LogSlider';
 
 export default function SamplingFrequency({ visible, hideDialog }) {
     const settings = useSettings();
     const dispatch = useSettingsDispatch();
-    const theme = useTheme();
 
     const [value, setValue] = useState(settings.bluetooth.updateFrequency);
 
     return (
         <Dialog visible={visible} onDismiss={hideDialog}>
             <Dialog.Title style={{fontSize: 20}}>Sampling interval</Dialog.Title>
+
             <Dialog.Content>
                 <RadioButton.Group
-                    onValueChange={(val) => {
-                        setValue(val);
-
-                    }}
+                    onValueChange={(val) => setValue(val)}
                     value={value}
                 >
                     <RadioButton.Item label="1000 ms" value={1000} />
@@ -32,6 +27,7 @@ export default function SamplingFrequency({ visible, hideDialog }) {
 
                 <LogSlider value={value} onValueChange={setValue} min={50} max={300000} />
             </Dialog.Content>
+            
             <Dialog.Actions>
                 <Button onPress={hideDialog} >Cancel</Button>
 
