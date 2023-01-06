@@ -18,8 +18,9 @@ export default function LogSlider({ value, onValueChange, min, max }) {
                 onValueChange={(i) => onValueChange(values[i])}
                 step={1}
                 thumbTintColor={theme.colors.primary}
+                minimumTrackTintColor={theme.colors.onSurfaceVariant}
             />
-            <Text>{value} ms</Text>
+            <Text>{formatTime(value)}</Text>
         </View>
     );
 }
@@ -63,6 +64,10 @@ function findClosestIndex(value, array) {
         Math.abs(current - value) < Math.abs(previous - value) ? current : previous,
     );
     return array.indexOf(closestValue);
+}
+
+function formatTime(ms) {
+    return new Date(ms).toISOString().slice(14, -1);
 }
 
 //TODO: Add labels,
