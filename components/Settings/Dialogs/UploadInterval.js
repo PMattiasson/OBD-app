@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button, Dialog, RadioButton } from 'react-native-paper';
 import { useSettings, useSettingsDispatch } from '../../../context/SettingsContext';
-import LogSlider from '../../LogSlider';
+// import LogSlider from '../../LogSlider';
 
 export default function UploadInterval({ visible, hideDialog }) {
     const settings = useSettings();
@@ -25,7 +25,7 @@ export default function UploadInterval({ visible, hideDialog }) {
                     <RadioButton.Item label="100 ms" value={100} />
                 </RadioButton.Group>
                 
-                <LogSlider value={value} onValueChange={setValue} min={50} max={300000} />
+                {/* <LogSlider value={value} onValueChange={setValue} min={50} max={300000} /> */}
             </Dialog.Content>
 
             <Dialog.Actions>
