@@ -39,7 +39,7 @@ export default function BluetoothScreen() {
         { label: 'Clear all requests', value: 'CMD+STOP', parent: 'custom' },
     ]);
 
-    const prevRequest = useRef([]);
+    const prevRequests = useRef([]);
 
     // Save requests
     const saveRequestsRef = useRef(settings.bluetooth.saveRequests);
@@ -122,10 +122,15 @@ export default function BluetoothScreen() {
         const msgStop = 'CMD+STOP';
         (async () => {
             if (state.connection) {
-                const result = prevRequest.current.every((req) => requests.includes(req));
-                if (result === false) await write([msgStop]);
-                prevRequest.current = requests;
-                write(requests);
+                const isFewer = !prevRequests.current.every((req) => requests.includes(req));
+                if (isFewer) {
+                    await write([msgStop]);
+                    write(requests);
+                } else {
+                    const filtered = requests.filter((req) => !prevRequests.current.includes(req));
+                    write(filtered);
+                }
+                prevRequests.current = requests;
             }
         })();
     }, [requests, state.connection, write]);
