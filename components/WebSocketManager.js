@@ -30,7 +30,7 @@ export default function WebSocketManager() {
             const message = JSON.stringify(dataSnippet);
             ws.current.send(message);
         } catch (e) {
-            console.log('WebSocket error:', e);
+            console.log('WebSocket send error:', e);
         }
     }, [data]);
 
@@ -70,7 +70,7 @@ export default function WebSocketManager() {
             })
             .catch((error) => {
                 authorized.current = false;
-                console.log(error);
+                console.log('Auth error:', error);
                 toast({
                     type: 'open',
                     message: 'Failed to connect to server',
@@ -87,9 +87,10 @@ export default function WebSocketManager() {
         usernameRef.current = settings.server.username;
         passwordRef.current = settings.server.password;
 
-        authorize(loginURL, usernameRef.current, passwordRef.current);
-
-        return () => fetch(logoutURL, { method: 'DELETE' });
+        if (httpURL) {
+            authorize(loginURL, usernameRef.current, passwordRef.current);
+            return () => fetch(logoutURL, { method: 'DELETE' });
+        }
     }, [settings.server.apiURL, settings.server.username, settings.server.password, authorize]);
 
     // Connection to server WebSocket
@@ -98,7 +99,7 @@ export default function WebSocketManager() {
         const loginURL = `${httpURL}login`;
         toggleUploadRef.current = settings.server.toggleUpload;
 
-        if (settings.server.toggleUpload) {
+        if (settings.server.toggleUpload && httpURL) {
             if (authorized.current === false) {
                 authorize(loginURL, usernameRef.current, passwordRef.current, connect);
             } else {
@@ -169,12 +170,12 @@ export default function WebSocketManager() {
 
                 ws.onerror = (event) => {
                     // an error occurred
-                    console.log(event.message);
+                    console.log('WebSocket error:', event.message);
                 };
 
                 wsCurrent = ws.current;
             } catch (e) {
-                console.log(e);
+                console.log('WebSocket connect error:', e);
             }
         }
 

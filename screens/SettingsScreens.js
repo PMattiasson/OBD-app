@@ -137,7 +137,7 @@ export default function SettingsScreen({ navigation }) {
                             />
                         )}
                         onPress={() => {
-                            if (settings.server.apiURL) {
+                            if (settings.server.apiURL || settings.server.toggleUpload) {
                                 dispatch({
                                     type: 'TOGGLE',
                                     object: 'server',
