@@ -80,14 +80,12 @@ export default function BluetoothScreen() {
         }
 
         if (settings.bluetooth.saveRequests) {
-            console.log('Load requests');
             setRequests(settings.bluetooth.requests);
         }
 
         // Save requests on screen unmount
         return () => {
             if (saveRequestsRef.current) {
-                console.log('Save requests', requestsRef.current);
                 dispatch({
                     type: 'SET',
                     object: 'bluetooth',
@@ -107,7 +105,6 @@ export default function BluetoothScreen() {
     // Forget saved requests
     useEffect(() => {
         if (!settings.bluetooth.saveRequests) {
-            console.log('Forget requests');
             dispatch({
                 type: 'SET',
                 object: 'bluetooth',
