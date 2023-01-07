@@ -158,9 +158,13 @@ export default function BluetoothScreen() {
             </Button>
 
             <DropDownPicker
+                style={{ backgroundColor: theme.colors.background }}
                 containerStyle={{ marginVertical: 20 }}
+                dropDownContainerStyle={{ backgroundColor: theme.colors.background }}
+                listParentContainerStyle={{ backgroundColor: theme.colors.background }}
+                listChildContainerStyle={{ backgroundColor: theme.colors.background }}
                 searchPlaceholder={'Search or add custom command'}
-                placeholder="Select request message"
+                placeholder="Select request messages"
                 open={showDropDown}
                 value={requests}
                 items={items}
