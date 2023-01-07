@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-raw-text */
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, useRef } from 'react';
 import { View, ScrollView } from 'react-native';
 import useBluetooth from '../hooks/useBluetooth';
 import { Button, List, Card, useTheme, Text } from 'react-native-paper';
@@ -39,6 +39,10 @@ export default function BluetoothScreen() {
         { label: 'Clear all requests', value: 'CMD+STOP', parent: 'custom' },
     ]);
 
+    // Save requests
+    const saveRequestsRef = useRef(settings.bluetooth.saveRequests);
+    const requestsRef = useRef(requests);
+
     useEffect(() => {
         if (state.connection) {
             setButtonText('Connected');
@@ -77,19 +81,25 @@ export default function BluetoothScreen() {
             console.log('Load requests');
             setRequests(settings.bluetooth.requests);
         }
+
+        // Save requests on screen unmount
+        return () => {
+            if (saveRequestsRef.current) {
+                console.log('Save requests', requestsRef.current);
+                dispatch({
+                    type: 'SET',
+                    object: 'bluetooth',
+                    property: 'requests',
+                    value: requestsRef.current,
+                });
+            }
+        };
     }, []);
 
-    // Save requests
+    // Save requests to ref
     useEffect(() => {
-        if (settings.bluetooth.saveRequests) {
-            console.log('Save requests', requests);
-            dispatch({
-                type: 'SET',
-                object: 'bluetooth',
-                property: 'requests',
-                value: requests,
-            });
-        }
+        saveRequestsRef.current = settings.bluetooth.saveRequests;
+        requestsRef.current = requests;
     }, [requests, settings.bluetooth.saveRequests]);
 
     // Forget saved requests
