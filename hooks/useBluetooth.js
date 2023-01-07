@@ -1,20 +1,17 @@
 // https://kenjdavidson.com/react-native-bluetooth-classic/react-native/rn-bluetooth-classic/
 // https://github.com/kenjdavidson/react-native-bluetooth-classic-apps/tree/main/BluetoothClassicExample
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import RNBluetoothClassic from 'react-native-bluetooth-classic';
 import { useDataDispatch } from '../context/DataContext';
 import { useBluetoothState } from '../context/BluetoothContext';
 import { useToast } from '../context/ToastContext';
 import { useSettings } from '../context/SettingsContext';
 
-const msgStop = 'CMD+STOP';
-
 export default function useBluetooth() {
-    const { state, setState, requests, setResponses } = useBluetoothState();
+    const { state, setState, setResponses } = useBluetoothState();
     const settings = useSettings();
     const { dispatch: toast } = useToast();
-    const prevRequest = useRef([]);
     const reconnectRef = useRef(settings.bluetooth.autoConnect);
 
     const dispatch = useDataDispatch();
@@ -115,6 +112,7 @@ export default function useBluetooth() {
     }
 
     async function disconnect() {
+        const msgStop = 'CMD+STOP';
         try {
             await write([msgStop]);
 
@@ -177,18 +175,6 @@ export default function useBluetooth() {
         },
         [state.device],
     );
-
-    // Handle requests
-    useEffect(() => {
-        (async () => {
-            if (state.connection) {
-                const result = prevRequest.current.every((req) => requests.includes(req));
-                if (result === false) await write([msgStop]);
-                prevRequest.current = requests;
-                write(requests);
-            }
-        })();
-    }, [requests, write, state.connection]);
 
     function unsubscribe() {
         connectionSubscription.current?.remove();

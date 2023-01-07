@@ -39,6 +39,8 @@ export default function BluetoothScreen() {
         { label: 'Clear all requests', value: 'CMD+STOP', parent: 'custom' },
     ]);
 
+    const prevRequest = useRef([]);
+
     // Save requests
     const saveRequestsRef = useRef(settings.bluetooth.saveRequests);
     const requestsRef = useRef(requests);
@@ -114,6 +116,19 @@ export default function BluetoothScreen() {
             });
         }
     }, [settings.bluetooth.saveRequests]);
+
+    // Handle requests
+    useEffect(() => {
+        const msgStop = 'CMD+STOP';
+        (async () => {
+            if (state.connection) {
+                const result = prevRequest.current.every((req) => requests.includes(req));
+                if (result === false) await write([msgStop]);
+                prevRequest.current = requests;
+                write(requests);
+            }
+        })();
+    }, [requests, state.connection, write]);
 
     // Send updated command variables to device on connection or settings state update
     useEffect(() => {
