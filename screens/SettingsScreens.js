@@ -81,6 +81,23 @@ export default function SettingsScreen({ navigation }) {
                         }}
                     />
                     <List.Item
+                        title="Save requests"
+                        description="Loads last requests on startup"
+                        left={(props) => <List.Icon {...props} icon="format-list-checkbox" />}
+                        right={() => (
+                            <Checkbox
+                                status={settings.bluetooth.saveRequests ? 'checked' : 'unchecked'}
+                            />
+                        )}
+                        onPress={() =>
+                            dispatch({
+                                type: 'TOGGLE',
+                                object: 'bluetooth',
+                                property: 'saveRequests',
+                            })
+                        }
+                    />
+                    <List.Item
                         title="Protocol"
                         description={
                             settings.bluetooth.protocol ? 'CAN' : 'K-line' ?? 'Not defined'

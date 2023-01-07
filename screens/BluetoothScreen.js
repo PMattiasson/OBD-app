@@ -6,14 +6,14 @@ import { Button, List, Card, useTheme, Text } from 'react-native-paper';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { styles } from '../styles/styles';
 import { useBluetoothState } from '../context/BluetoothContext';
-import { useSettings } from '../context/SettingsContext';
+import { useSettings, useSettingsDispatch } from '../context/SettingsContext';
 import ThemeContext from '../context/ThemeContext';
 
 export default function BluetoothScreen() {
     const { toggleConnection, write } = useBluetooth();
-
     const { state, requests, setRequests, responses } = useBluetoothState();
     const settings = useSettings();
+    const dispatch = useSettingsDispatch();
     const theme = useTheme();
     const { isThemeDark } = useContext(ThemeContext);
 
@@ -67,12 +67,43 @@ export default function BluetoothScreen() {
         theme.colors.primary,
     ]);
 
-    // Auto-connect
+    // Auto-connect & load requests on screen mount
     useEffect(() => {
         if (settings.bluetooth.autoConnect && state.device) {
             toggleConnection();
         }
+
+        if (settings.bluetooth.saveRequests) {
+            console.log('Load requests');
+            setRequests(settings.bluetooth.requests);
+        }
     }, []);
+
+    // Save requests
+    useEffect(() => {
+        if (settings.bluetooth.saveRequests) {
+            console.log('Save requests', requests);
+            dispatch({
+                type: 'SET',
+                object: 'bluetooth',
+                property: 'requests',
+                value: requests,
+            });
+        }
+    }, [requests, settings.bluetooth.saveRequests]);
+
+    // Forget saved requests
+    useEffect(() => {
+        if (!settings.bluetooth.saveRequests) {
+            console.log('Forget requests');
+            dispatch({
+                type: 'SET',
+                object: 'bluetooth',
+                property: 'requests',
+                value: [],
+            });
+        }
+    }, [settings.bluetooth.saveRequests]);
 
     // Send updated command variables to device on connection or settings state update
     useEffect(() => {
@@ -117,7 +148,8 @@ export default function BluetoothScreen() {
                 listParentLabelStyle={{ fontWeight: 'bold' }}
                 stickyHeader={true}
                 multiple={true}
-                maxHeight={300}
+                maxHeight={'80%'}
+                dropDownDirection="BOTTOM"
                 theme={isThemeDark ? 'DARK' : 'LIGHT'}
             />
 
