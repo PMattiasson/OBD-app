@@ -6,14 +6,14 @@ import { Button, List, Card, useTheme, Text } from 'react-native-paper';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { styles } from '../styles/styles';
 import { useBluetoothState } from '../context/BluetoothContext';
-import { useSettings, useSettingsDispatch } from '../context/SettingsContext';
+import { useSettings } from '../context/SettingsContext';
 import ThemeContext from '../context/ThemeContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function BluetoothScreen() {
     const { toggleConnection, write } = useBluetooth();
     const { state, requests, setRequests, responses } = useBluetoothState();
     const settings = useSettings();
-    const dispatch = useSettingsDispatch();
     const theme = useTheme();
     const { isThemeDark } = useContext(ThemeContext);
 
@@ -40,10 +40,6 @@ export default function BluetoothScreen() {
     ]);
 
     const prevRequests = useRef([]);
-
-    // Save requests
-    const saveRequestsRef = useRef(settings.bluetooth.saveRequests);
-    const requestsRef = useRef(requests);
 
     useEffect(() => {
         if (state.connection) {
@@ -80,37 +76,24 @@ export default function BluetoothScreen() {
         }
 
         if (settings.bluetooth.saveRequests) {
-            setRequests(settings.bluetooth.requests);
+            (async () => {
+                const storedRequests = await getStoredRequests();
+                setRequests(storedRequests);
+            })();
         }
-
-        // Save requests on screen unmount
-        return () => {
-            if (saveRequestsRef.current) {
-                dispatch({
-                    type: 'SET',
-                    object: 'bluetooth',
-                    property: 'requests',
-                    value: requestsRef.current,
-                });
-            }
-        };
     }, []);
 
-    // Save requests to ref
+    // Save requests to storage
     useEffect(() => {
-        saveRequestsRef.current = settings.bluetooth.saveRequests;
-        requestsRef.current = requests;
+        if (settings.bluetooth.saveRequests) {
+            storeRequests(requests);
+        }
     }, [requests, settings.bluetooth.saveRequests]);
 
     // Forget saved requests
     useEffect(() => {
         if (!settings.bluetooth.saveRequests) {
-            dispatch({
-                type: 'SET',
-                object: 'bluetooth',
-                property: 'requests',
-                value: [],
-            });
+            storeRequests([]);
         }
     }, [settings.bluetooth.saveRequests]);
 
@@ -216,4 +199,21 @@ export default function BluetoothScreen() {
             </ScrollView>
         </View>
     );
+}
+
+async function storeRequests(requests) {
+    try {
+        AsyncStorage.setItem('@obd-requests', JSON.stringify(requests));
+    } catch (e) {
+        console.log('Request storage write error:', e);
+    }
+}
+
+async function getStoredRequests() {
+    try {
+        const jsonValue = await AsyncStorage.getItem('@obd-requests');
+        return jsonValue != null ? JSON.parse(jsonValue) : [];
+    } catch (e) {
+        console.log('Request storage get error:', e);
+    }
 }

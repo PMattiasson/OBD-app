@@ -91,7 +91,6 @@ const defaultSettings = {
         updateFrequency: 1000,
         protocol: true,
         saveRequests: false,
-        requests: [],
     },
     server: {
         apiURL: undefined,
