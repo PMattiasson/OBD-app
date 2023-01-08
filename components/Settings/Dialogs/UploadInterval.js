@@ -1,13 +1,15 @@
 import { useState } from 'react';
-import { Button, Dialog, RadioButton } from 'react-native-paper';
+import { TouchableOpacity, View } from 'react-native';
+import { Button, Dialog, RadioButton, Text, Tooltip } from 'react-native-paper';
 import { useSettings, useSettingsDispatch } from '../../../context/SettingsContext';
-// import LogSlider from '../../LogSlider';
+import LogSlider from '../../LogSlider';
 
 export default function UploadInterval({ visible, hideDialog }) {
     const settings = useSettings();
     const dispatch = useSettingsDispatch();
 
     const [value, setValue] = useState(settings.server.uploadFrequency);
+    const [sliderValue, setSliderValue] = useState(settings.server.uploadFrequency);
 
     return (
         <Dialog visible={visible} onDismiss={hideDialog}>
@@ -15,7 +17,10 @@ export default function UploadInterval({ visible, hideDialog }) {
 
             <Dialog.Content>
                 <RadioButton.Group
-                    onValueChange={(val) => setValue(val)}
+                    onValueChange={(val) => {
+                        setValue(val);
+                        setSliderValue(val);
+                    }}
                     value={value}
                 >
                     <RadioButton.Item label="On data update" value={null} />
@@ -25,7 +30,17 @@ export default function UploadInterval({ visible, hideDialog }) {
                     <RadioButton.Item label="100 ms" value={100} />
                 </RadioButton.Group>
                 
-                {/* <LogSlider value={value} onValueChange={setValue} min={50} max={300000} /> */}
+                {value && 
+                    <View style={{ alignItems: 'center' }}>
+                            <LogSlider value={sliderValue} onValueChange={setValue} min={50} max={300000} />
+                            
+                            <Tooltip title="minutes:seconds.milliseconds">
+                                <TouchableOpacity>
+                                    <Text>{formatTime(value)}</Text>
+                                </TouchableOpacity>
+                            </Tooltip>
+                    </View>
+                }
             </Dialog.Content>
 
             <Dialog.Actions>
@@ -40,4 +55,8 @@ export default function UploadInterval({ visible, hideDialog }) {
             </Dialog.Actions>
         </Dialog>
     );
+}
+
+function formatTime(ms) {
+    return new Date(ms).toISOString().slice(14, -1);
 }

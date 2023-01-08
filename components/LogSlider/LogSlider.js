@@ -1,27 +1,27 @@
 import Slider from '@react-native-community/slider';
-import { useState } from 'react';
-import { View } from 'react-native';
-import { Text, useTheme } from 'react-native-paper';
+import { useEffect, useState } from 'react';
+import { useTheme } from 'react-native-paper';
 
 export default function LogSlider({ value, onValueChange, min, max }) {
     const theme = useTheme();
     const [values, setValues] = useState(() => createLogScaleValues(min, max));
     const [initialValue, setInitialValue] = useState(() => findClosestIndex(value, values));
 
+    useEffect(() => {
+        setInitialValue(findClosestIndex(value, values));
+    }, [value]);
+
     return (
-        <View style={{ alignItems: 'center' }}>
-            <Slider
-                style={{ width: '90%', height: 40 }}
-                minimumValue={0}
-                maximumValue={values.length - 1}
-                value={initialValue}
-                onValueChange={(i) => onValueChange(values[i])}
-                step={1}
-                thumbTintColor={theme.colors.primary}
-                minimumTrackTintColor={theme.colors.onSurfaceVariant}
-            />
-            <Text>{formatTime(value)}</Text>
-        </View>
+        <Slider
+            style={{ width: '90%', height: 40 }}
+            minimumValue={0}
+            maximumValue={values.length - 1}
+            value={initialValue}
+            onValueChange={(i) => onValueChange(values[i])}
+            step={1}
+            thumbTintColor={theme.colors.primary}
+            minimumTrackTintColor={theme.colors.onSurfaceVariant}
+        />
     );
 }
 
@@ -60,14 +60,10 @@ function range(start, stop, step = 1) {
 }
 
 function findClosestIndex(value, array) {
-    let closestValue = array.reduce((previous, current) =>
+    const closestValue = array.reduce((previous, current) =>
         Math.abs(current - value) < Math.abs(previous - value) ? current : previous,
     );
-    return array.indexOf(closestValue);
-}
+    const closestIndex = array.indexOf(closestValue);
 
-function formatTime(ms) {
-    return new Date(ms).toISOString().slice(14, -1);
+    return closestIndex;
 }
-
-//TODO: Add labels,

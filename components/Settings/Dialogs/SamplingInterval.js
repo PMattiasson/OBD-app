@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Button, Dialog, RadioButton } from 'react-native-paper';
+import { TouchableOpacity, View } from 'react-native';
+import { Button, Dialog, RadioButton, Text, Tooltip } from 'react-native-paper';
 import { useSettings, useSettingsDispatch } from '../../../context/SettingsContext';
 import LogSlider from '../../LogSlider';
 
@@ -8,6 +9,7 @@ export default function SamplingFrequency({ visible, hideDialog }) {
     const dispatch = useSettingsDispatch();
 
     const [value, setValue] = useState(settings.bluetooth.updateFrequency);
+    const [sliderValue, setSliderValue] = useState(settings.bluetooth.updateFrequency);
 
     return (
         <Dialog visible={visible} onDismiss={hideDialog}>
@@ -15,7 +17,10 @@ export default function SamplingFrequency({ visible, hideDialog }) {
 
             <Dialog.Content>
                 <RadioButton.Group
-                    onValueChange={(val) => setValue(val)}
+                    onValueChange={(val) => {
+                        setValue(val);
+                        setSliderValue(val);
+                    }}
                     value={value}
                 >
                     <RadioButton.Item label="1000 ms" value={1000} />
@@ -25,7 +30,15 @@ export default function SamplingFrequency({ visible, hideDialog }) {
                     <RadioButton.Item label="50 ms" value={50} />
                 </RadioButton.Group>
 
-                <LogSlider value={value} onValueChange={setValue} min={50} max={300000} />
+                <View style={{ alignItems: 'center' }}>
+                            <LogSlider value={sliderValue} onValueChange={setValue} min={50} max={300000} />
+                            
+                            <Tooltip title="minutes:seconds.milliseconds">
+                                <TouchableOpacity>
+                                    <Text>{formatTime(value)}</Text>
+                                </TouchableOpacity>
+                            </Tooltip>
+                </View>
             </Dialog.Content>
             
             <Dialog.Actions>
@@ -40,4 +53,8 @@ export default function SamplingFrequency({ visible, hideDialog }) {
             </Dialog.Actions>
         </Dialog>
     );
+}
+
+function formatTime(ms) {
+    return new Date(ms).toISOString().slice(14, -1);
 }
