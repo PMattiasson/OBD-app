@@ -162,7 +162,7 @@ export default function BluetoothScreen() {
                 listParentLabelStyle={{ fontWeight: 'bold' }}
                 stickyHeader={true}
                 multiple={true}
-                maxHeight={'80%'}
+                maxHeight={450}
                 dropDownDirection="BOTTOM"
                 theme={isThemeDark ? 'DARK' : 'LIGHT'}
             />
