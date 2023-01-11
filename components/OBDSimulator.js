@@ -4,6 +4,7 @@ import { Text } from 'react-native-paper';
 import { useDataDispatch } from '../context/DataContext';
 import { useBluetoothState } from '../context/BluetoothContext';
 import { useSettings } from '../context/SettingsContext';
+import responsePIDs from '../constants/PID-database';
 
 const map = (value, x1, y1, x2, y2) => ((value - x1) * (y2 - x2)) / (y1 - x1) + x2;
 
@@ -42,26 +43,13 @@ export default function OBDSimulator() {
             let responses = [];
 
             requests.forEach((req) => {
-                switch (req) {
-                case '020104':
-                    responses.push(`034104${valByte.toString(16)}`);
-                    break;
-                case '020105':
-                    responses.push(`034105${valByte.toString(16)}`);
-                    break;
-                case '02010A':
-                    responses.push(`03410A${valByte.toString(16)}`);
-                    break;
-                case '02010C':
-                    responses.push(`04410C${value.toString(16)}`);
-                    break;
-                case '02010D':
-                    responses.push(`03410D${valByte.toString(16)}`);
-                    break;
-                case '020110':
-                    responses.push(`034110${value.toString(16)}`);
-                    break;
-                }
+                let strPID = req.slice(4, 6);
+                let intPID = parseInt(strPID, 16);
+                let bytes = responsePIDs.find((obj) => obj.PID === intPID).dataBytes;
+                let data;
+                if (bytes === 1) data = valByte.toString(16);
+                else data = value.toString(16);
+                responses.push(`0${bytes + 2}41${strPID}${data}`);
             });
 
             setResponses(responses);
