@@ -26,6 +26,7 @@ export default function BluetoothScreen() {
     const [showDropDown, setShowDropDown] = useState(false);
     const [items, setItems] = useState([
         { label: 'OBD-II request messages', value: 'obd' },
+        { label: '22 - Fuel rail pressure', value: '020122', parent: 'obd' },
         { label: '1F - Run time since engine start', value: '02011F', parent: 'obd' },
         { label: '11 - Throttle position', value: '020111', parent: 'obd' },
         { label: '10 - Mass air flow rate', value: '020110', parent: 'obd' },
@@ -33,6 +34,10 @@ export default function BluetoothScreen() {
         { label: '0D - Vehicle speed', value: '02010D', parent: 'obd' },
         { label: '0C - Engine speed', value: '02010C', parent: 'obd' },
         { label: '0A - Fuel pressure', value: '02010A', parent: 'obd' },
+        { label: '09 - Long term fuel trim (bank 2)', value: '020109', parent: 'obd' },
+        { label: '08 - Short term fuel trim (bank 2)', value: '020108', parent: 'obd' },
+        { label: '07 - Long term fuel trim (bank 1)', value: '020107', parent: 'obd' },
+        { label: '06 - Short term fuel trim (bank 1)', value: '020106', parent: 'obd' },
         { label: '05 - Coolant temperature', value: '020105', parent: 'obd' },
         { label: '04 - Calculated engine load', value: '020104', parent: 'obd' },
         { label: 'Custom messages', value: 'custom' },
