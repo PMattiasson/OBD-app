@@ -12,10 +12,12 @@ import {
     DialogUploadInterval,
     DialogAccount,
 } from '../components/Settings/Dialogs';
+import { useDataDispatch } from '../context/DataContext';
 
 export default function SettingsScreen({ navigation }) {
     const settings = useSettings();
     const dispatch = useSettingsDispatch();
+    const dispatchData = useDataDispatch();
     const { toggleTheme, isThemeDark } = useContext(ThemeContext);
 
     const [dialog, setDialog] = useState({ visible: false, type: null });
@@ -264,6 +266,15 @@ export default function SettingsScreen({ navigation }) {
                                 type: 'TOGGLE',
                                 object: 'debug',
                                 property: 'generateRandom',
+                            });
+                        }}
+                    />
+                    <List.Item
+                        title="Clear OBD-II response data"
+                        left={(props) => <List.Icon {...props} icon="delete" />}
+                        onPress={() => {
+                            dispatchData({
+                                type: 'reset',
                             });
                         }}
                     />

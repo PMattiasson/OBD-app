@@ -65,6 +65,7 @@ function dataReducer(data, action) {
         return newData;
     }
     case 'reset': {
+        myPIDs = [];
         return {};
     }
     default: {
